@@ -72,7 +72,7 @@ Three distinct objects, not always clearly distinguished:
 \end{frame}
 
 \begin{frame}{The Lay of the Land}
-\begin{adjustbox}{width=0.9\textwidth,center}
+\begin{adjustbox}{width=0.65\textwidth,center}
 \begin{tikzpicture}
   \node[red!70!black] (theory) at (-3.5,1.25) {Economic Theory};
   \node[state,rectangle,red!70!black] (parameters) at (-3.5,0) {Parameters};
@@ -89,7 +89,7 @@ Three distinct objects, not always clearly distinguished:
         (estimators) edge[bend left=40] node[below,el,yshift=-4pt] {Statistical Inference} (estimands);
 \end{tikzpicture}
 \end{adjustbox}
-\vspace{8mm}
+\smallskip
 
 Separating identification (linking parameters to estimands) from inference
 (linking estimators to estimands) keeps the analysis disciplined.
@@ -99,7 +99,7 @@ Separating identification (linking parameters to estimands) from inference
 Simple causal model: $Y_i = \violetRed{\beta}\,D_i + \varepsilon_i$, where $D_i$ is the
 treatment, $\varepsilon_i$ is the unobserved term.
 
-\bigskip
+\medskip
 In large samples, OLS converges to:
 \[
 \pictonBlue{\beta^{OLS}} = \violetRed{\beta} +
@@ -111,9 +111,9 @@ In large samples, OLS converges to:
         treatment, so $Cov(\varepsilon_i,D_i)\ne0$
 \end{itemize}
 
-\bigskip
-\textbf{Causal diagram:}
-\begin{adjustbox}{width=0.55\textwidth,center}
+\smallskip
+\textbf{Causal diagram (endogeneity):}
+\begin{adjustbox}{width=0.42\textwidth,center}
 \begin{tikzpicture}
   \node[state] (D) at (0,0) {$D$};
   \node[state] (Y) at (2,0) {$Y$};
@@ -402,277 +402,282 @@ Overidentified 2SLS faces an additional problem when there are many weak instrum
 %=============================================================
 
 \begin{frame}{Overview: Two Landmark IV Papers (Post-2010, Top-5 Journals)}
-We study two highly cited papers that use creative IV designs to establish causal relationships:
+We study two highly cited papers that use \textbf{non-shift-share} IV designs
+to establish causal relationships:
 \begin{enumerate}
-  \item \textbf{Nunn and Qian (2014, \emph{AER})}\\
-        ``US Food Aid and Civil Conflict''\\
-        {\small Uses US wheat production $\times$ historical aid patterns as IV.
-        Context: Africa and developing world.}
+  \item \textbf{Maestas, Mullen, and Strand (2013, \emph{AER})}\\
+        ``Does Disability Insurance Receipt Discourage Work?''\\
+        {\small IV: randomly assigned Social Security disability examiners.
+        Context: US disability insurance applicants.}
   \medskip
-  \item \textbf{Acemoglu and Restrepo (2020, \emph{JPE})}\\
-        ``Robots and Employment: Evidence from US Commuting Zones''\\
-        {\small Uses Bartik shift-share IV with robot adoption in other countries.
-        Context: US labor markets.}
+  \item \textbf{Aizer and Doyle (2015, \emph{QJE})}\\
+        ``Juvenile Incarceration, Human Capital, and Future Crime''\\
+        {\small IV: randomly assigned juvenile court judges.
+        Context: US juvenile criminal justice system.}
 \end{enumerate}
 \medskip
-Both papers were cited 1{,}000+ times within a decade of publication
-and have had substantial impact on empirical methodology.
+Both papers use \textbf{random assignment of decision-makers} as the
+identifying instrument---a design that is transparent, credible, and
+widely applicable in policy evaluation contexts.
 \end{frame}
 
-% ------ Paper 1: Nunn & Qian (2014) ------
-\begin{frame}{Paper~1: Nunn and Qian (2014, \emph{AER})}
+% ------ Paper 1: Maestas, Mullen & Strand (2013) ------
+\begin{frame}{Paper~1: Maestas, Mullen, and Strand (2013, \emph{AER})}
 \begin{block}{Citation}
-  Nunn, N.\ and Qian, N.\ (2014).
-  ``US Food Aid and Civil Conflict.''
-  \textit{American Economic Review}, 104(6): 1630--1666.
-  {\small($\approx$1{,}700 Google Scholar citations)}
+  Maestas, N., Mullen, K.J., and Strand, A.\ (2013).
+  ``Does Disability Insurance Receipt Discourage Work? Using Examiner
+  Assignment to Estimate Causal Effects of SSDI Receipt.''
+  \textit{American Economic Review}, 103(5): 1797--1829.
+  {\small($\approx$1{,}300 Google Scholar citations)}
 \end{block}
 
-\textbf{Research question:} Does US food aid \emph{cause} civil conflict in
-recipient countries?
+\textbf{Research question:} Does receiving Social Security Disability
+Insurance (SSDI) benefits \emph{cause} a reduction in employment?
 
 \medskip
 \textbf{Context \& motivation:}
 \begin{itemize}
-  \item The US is the world's largest food-aid donor; annual shipments
-        exceed \$1 billion
-  \item Theoretical ambiguity: aid may reduce conflict by alleviating
-        poverty, or \emph{increase} conflict by providing resources to loot
-        or by strengthening rebel groups
-  \item OLS correlation is unreliable: countries in conflict receive more
-        aid (\emph{reverse causality}); unobserved factors (instability,
-        colonial history) drive both variables (\emph{omitted variable bias})
+  \item SSDI provides income support to workers with disabling conditions;
+        by 2010 over 8.2 million Americans received benefits (\$119 billion)
+  \item Key policy concern: does SSDI create a ``poverty trap'' by
+        discouraging recipients from returning to work?
+  \item OLS is severely biased: healthier rejected applicants would work
+        anyway; sicker accepted applicants could not work regardless
+        (\emph{reverse causality + selection on unobserved health})
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Nunn \& Qian (2014): Identification Strategy}
-\textbf{The IV:} Interaction of US wheat production with a country's
-historical propensity to receive US food aid:
-\[
-Z_{it} = \underbrace{\text{USWheat}_{t}}_{\text{supply shock}}
-         \times
-         \underbrace{\bar{P}_i}_{\text{historical aid share}}
-\]
+\begin{frame}{MMS (2013): Examiner Assignment IV Strategy}
+\textbf{The IV:} Randomly assigned disability examiners differ
+systematically in their allowance rates (``leniency''):
 \begin{itemize}
-  \item $\text{USWheat}_t$: deviations in US wheat production (driven by
-        domestic weather and farm policy, \emph{exogenous} to recipient
-        conditions)
-  \item $\bar{P}_i$: fraction of years country $i$ received US food aid
-        in 1971--1974 (pre-determined baseline capturing structural
-        factors: colonial ties, Cold War alignment, proximity)
+  \item SSDI applications are assigned to examiners quasi-randomly
+        within local Disability Determination Services (DDS) offices
+  \item Examiners vary substantially in their allowance rates even
+        after controlling for case characteristics
+  \item An examiner's average grant rate (leave-one-out, in other cases)
+        is used as the instrument for the applicant's SSDI receipt
 \end{itemize}
 \medskip
-\textbf{Identifying variation:}
+\textbf{IV validity:}
 \begin{itemize}
-  \item In bad US harvest years, food-aid flows fall globally
-  \item Countries with higher historical aid propensity experience larger
-        fluctuations---variation that is uncorrelated with their own
-        domestic conditions
+  \item \textbf{Relevance}: examiner leniency strongly predicts own award
+        probability (first-stage $F > 100$)
+  \item \textbf{Independence}: assignment is quasi-random within offices
+        (applicants cannot choose their examiner)
+  \item \textbf{Exclusion}: examiner leniency affects employment only through
+        SSDI award, not through other channels
+  \item \textbf{Monotonicity}: a stricter examiner can only reduce (never
+        increase) an applicant's probability of receiving SSDI
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Nunn \& Qian (2014): Data and Specification}
+\begin{frame}{MMS (2013): Data and Specification}
 \textbf{Data:}
 \begin{itemize}
-  \item 125 food-aid recipient countries, annual panel 1971--2006
-  \item \textbf{Outcome}: intra-state conflict onset \& incidence
-        (from PRIO Armed Conflict Dataset)
-  \item \textbf{Treatment}: US food aid shipments (USAID Greenbook)
-  \item \textbf{Instrument}: USDA wheat production $\times$ historical
-        aid share
-  \item \textbf{Controls}: country and year fixed effects; oil prices;
-        US GDP growth; country-specific trends
+  \item Social Security Administration administrative records:
+        $\approx$1.5 million SSDI applicants, 1997--2004
+  \item \textbf{Treatment}: binary indicator for SSDI award (0/1)
+  \item \textbf{Outcomes}: employment indicator, earnings
+        (linked to earnings records from IRS W-2 forms)
+  \item \textbf{Instrument}: leave-one-out examiner allowance rate
+        (average grant rate of the assigned examiner on all other cases)
+  \item \textbf{Strata}: DDS office $\times$ quarter fixed effects
+        (controls for within-office assignment patterns)
 \end{itemize}
 
 \medskip
 \textbf{Specification:}
 \[
-\text{Conflict}_{it} = \alpha_i + \mu_t + \beta\,\text{FoodAid}_{it}
-  + \mathbf{W}_{it}^\prime\gamma + \varepsilon_{it}
+Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
 \]
-Instrumenting $\text{FoodAid}_{it}$ with $Z_{it}$ via 2SLS.
-
-\medskip
-\textbf{Level of identifying variation:} US wheat production varies
-year-by-year; the interaction creates country-year level variation.
+\begin{itemize}
+  \item 2SLS using examiner leniency as $Z_i$, conditional on DDS-quarter FEs
+  \item Robust to controlling for applicant characteristics (age, diagnosis,
+        prior earnings) because assignment is as-good-as-random
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Nunn \& Qian (2014): Results and Robustness}
+\begin{frame}{MMS (2013): Results and Robustness}
 \textbf{Key findings:}
 \begin{itemize}
-  \item A 10\% increase in food-aid deliveries raises the probability of
-        civil conflict onset by $\approx 1.14$ percentage points (large
-        relative to an $\approx 5\%$ base rate)
-  \item Effects are concentrated in countries with weak initial institutions
-        and high ethnic fractionalization
-  \item Stronger effects for food aid that arrives \emph{during} conflict
-        (suggests rebel looting mechanism)
+  \item SSDI receipt reduces employment by $\approx$\textbf{28 percentage
+        points} at ages 45--64 (IV estimate much larger than OLS)
+  \item About \textbf{23\%} of marginal SSDI recipients (compliers) could
+        work: the ``work-capable'' group whose decision is affected by
+        examiner assignment
+  \item OLS understates the causal effect because rejected applicants
+        who remain employed create a spurious positive ``health effect''
 \end{itemize}
 
 \medskip
 \textbf{Robustness and sensitivity:}
 \begin{itemize}
-  \item \emph{Placebo crops}: using soybean or corn production instead of
-        wheat yields near-zero first stages and insignificant reduced
-        forms---these crops are not price-supported and less likely to
-        drive food-aid volumes
-  \item \emph{Alternative instruments}: using only lagged US wheat
-        production (dropping $\bar P_i$ variation) gives similar results
-  \item \emph{Excluding major recipients}: dropping top food-aid
-        recipients (Egypt, Ethiopia) does not change results
-  \item \emph{Heterogeneous trends}: allowing country-specific linear
-        trends leaves findings robust
+  \item \emph{Placebo test}: examiner leniency does not predict
+        pre-application employment trends (balance on pre-period outcomes)
+  \item \emph{Alternative examiner measures}: using quintiles of leniency
+        instead of the continuous measure gives nearly identical results
+  \item \emph{Sub-group consistency}: effects are similar across age groups,
+        diagnosis categories, and states
+  \item \emph{Complier analysis}: marginal recipients are younger, healthier,
+        and have higher prior earnings than average recipients, explaining
+        why SSDI receipt suppresses their employment substantially
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Nunn \& Qian (2014): Contribution and IV Lessons}
+\begin{frame}{MMS (2013): Contribution and IV Lessons}
 \textbf{Academic contributions:}
 \begin{itemize}
-  \item First large-$N$ causal evidence that food aid can increase, not
-        decrease, conflict---a ``boomerang effect''
-  \item Shapes the debate on aid effectiveness (Easterly vs.\ Sachs)
-        and humanitarian intervention design
-  \item Demonstrates that agricultural commodity shocks in donor
-        countries can serve as valid instruments for aid flows
+  \item First credible causal estimate of SSDI's effect on employment;
+        resolves a long-standing identification debate
+  \item Shows SSDI creates work disincentives for a sizeable share of
+        recipients---important for disability insurance design
+  \item Introduced the ``examiner leniency'' IV into economics; spawned
+        a large literature on disability insurance, screening, and
+        physician/administrative judgment
 \end{itemize}
 
 \medskip
 \textbf{IV methodology lessons:}
 \begin{itemize}
-  \item The \textbf{interaction instrument} $Z_{it}=\text{Shock}_t\times
-        \text{Exposure}_i$ is a workhorse design in development economics
-  \item Validity rests on the \emph{supply} side (US weather/farm policy
-        unrelated to conflict in recipient countries)
-  \item The inclusion of country FE absorbs time-invariant confounders
-        correlated with $\bar P_i$; year FE absorbs global shocks
-  \item Always test first stage separately by sub-groups and with
-        alternative instrument definitions
+  \item \textbf{Random assignment of decision-makers} is a powerful source
+        of exogenous variation when direct randomization is infeasible
+  \item The \textbf{leave-one-out leniency measure} avoids mechanical
+        correlation between one's own case and the instrument
+  \item \textbf{LATE interpretation} is transparent: IV estimates the effect
+        of SSDI on ``compliers''---those whose award decision is influenced
+        by examiner assignment
+  \item Strata fixed effects (DDS-quarter) are essential to isolate
+        within-office random variation
 \end{itemize}
 \end{frame}
 
-% ------ Paper 2: Acemoglu & Restrepo (2020) ------
-\begin{frame}{Paper~2: Acemoglu and Restrepo (2020, \emph{JPE})}
+% ------ Paper 2: Aizer & Doyle (2015) ------
+\begin{frame}{Paper~2: Aizer and Doyle (2015, \emph{QJE})}
 \begin{block}{Citation}
-  Acemoglu, D.\ and Restrepo, P.\ (2020).
-  ``Robots and Employment: Evidence from US Commuting Zones, 1990--2007.''
-  \textit{Journal of Political Economy}, 128(6): 2188--2244.
-  {\small($\approx$1{,}800 Google Scholar citations)}
+  Aizer, A.\ and Doyle, J.J., Jr.\ (2015).
+  ``Juvenile Incarceration, Human Capital, and Future Crime: Evidence
+  from Randomly Assigned Judges.''
+  \textit{Quarterly Journal of Economics}, 130(2): 759--803.
+  {\small($\approx$900 Google Scholar citations)}
 \end{block}
 
-\textbf{Research question:} What is the causal effect of industrial robot
-adoption on local labor markets?
+\textbf{Research question:} Does incarcerating juveniles reduce or increase
+their subsequent criminal activity and human capital?
 
 \medskip
 \textbf{Context \& motivation:}
 \begin{itemize}
-  \item Industrial robot density rose sharply in Europe and the US from
-        the 1990s---particularly in automotive, electronics, and metals
-  \item Economic theory predicts robots displace routine tasks but may
-        create complementary jobs elsewhere
-  \item OLS is biased: industries undergoing productivity shocks may
-        adopt robots \emph{and} have other trends in wages/employment
+  \item The US incarcerates approximately 70{,}000 juveniles on any given day;
+        recidivism rates are high ($\approx$70\% re-arrested within 3 years)
+  \item Policy debate: does incarceration deter future crime (deterrence),
+        or does it increase it via criminal networks and disrupted schooling?
+  \item OLS is biased: more serious offenders are both more likely to be
+        incarcerated \emph{and} more likely to re-offend regardless
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Acemoglu \& Restrepo (2020): Shift-Share IV Design}
-\textbf{The instrument:} Robot adoption in other high-income countries
-``translated'' to US commuting zones via pre-period industry shares:
-\[
-Z_i = \sum_k \underbrace{l_{ik,1990}}_{\text{share}}
-             \times
-             \underbrace{\Delta\text{Robots}_{k,\text{OtherCountries}}}_{\text{shock}}
-\]
+\begin{frame}{Aizer \& Doyle (2015): Judge IV Strategy}
+\textbf{The IV:} Randomly assigned juvenile court judges vary in their
+propensity to incarcerate:
 \begin{itemize}
-  \item \textbf{Shocks}: growth in robots per worker in industry $k$
-        across Europe (France, Germany, Italy, Finland, Sweden, etc.)
-  \item \textbf{Shares}: CZ $i$'s employment share in industry $k$ as
-        of 1990 (pre-determined)
+  \item Juvenile cases are assigned to judges \emph{randomly} within
+        courthouses in Chicago, Illinois
+  \item Judges differ substantially in their incarceration rates even
+        for similar offense types and defendant characteristics
+  \item A judge's leave-one-out incarceration rate on other cases is the
+        instrument for whether defendant $i$ is incarcerated
 \end{itemize}
 \medskip
-\textbf{Validity argument (parallel to ADH 2013):}
+\textbf{IV validity:}
 \begin{itemize}
-  \item Robot adoption in European industries reflects global technology
-        improvements, not US local demand conditions
-  \item Pre-period shares capture industrial composition that predates
-        the robot wave---plausibly uncorrelated with contemporaneous
-        US labor demand shocks
+  \item \textbf{Relevance}: judge leniency strongly predicts incarceration
+        (first-stage $F \approx 35$--50)
+  \item \textbf{Independence}: assignment is explicitly random within court
+        (confirmed by balance tests on pre-determined characteristics)
+  \item \textbf{Exclusion}: judge assignment affects outcomes only through
+        the incarceration decision, not through other channels
+  \item \textbf{Monotonicity}: a stricter judge cannot reduce a defendant's
+        incarceration probability (one-directional instrument)
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Acemoglu \& Restrepo (2020): Data and Specification}
+\begin{frame}{Aizer \& Doyle (2015): Data and Specification}
 \textbf{Data:}
 \begin{itemize}
-  \item 722 US commuting zones (CZs), two periods: 1990--2007
-  \item \textbf{Treatment}: robots per 1{,}000 workers in each CZ
-        (constructed from IFR data mapped to CZ industries)
-  \item \textbf{Outcomes}: employment-to-population ratio; log wages;
-        share in manufacturing; hours worked
-  \item \textbf{Instrument}: exposure to foreign robot adoption via Bartik construction above
-  \item \textbf{Controls}: demographics, routine task intensity, CZ
-        fixed effects, census division fixed effects
+  \item Illinois Juvenile Court data linked to adult criminal records,
+        high school graduation records, and mortality data; 1990--2006
+  \item $\approx$35{,}000 juvenile cases in Chicago (ages 10--17)
+  \item \textbf{Treatment}: binary incarceration indicator (0/1)
+  \item \textbf{Outcomes}: adult incarceration, high school graduation,
+        employment, and earnings in adulthood (ages 25--35)
+  \item \textbf{Instrument}: leave-one-out judge incarceration rate
+        (within courthouse, controlling for offense type and year)
 \end{itemize}
 
 \medskip
 \textbf{Specification:}
 \[
-\Delta Y_i = \alpha + \beta\,\Delta\text{Robots}_i
-           + X_i^\prime\gamma + \varepsilon_i
+Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
 \]
-Instrumenting $\Delta\text{Robots}_i$ with $Z_i$ via 2SLS across two
-long differences (1990--2000, 2000--2007).
+\begin{itemize}
+  \item 2SLS using judge leniency as $Z_i$, with courthouse-year-offense
+        category fixed effects as strata
+  \item Outcomes measured 5--15 years after the juvenile offense
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Acemoglu \& Restrepo (2020): Results and Robustness}
+\begin{frame}{Aizer \& Doyle (2015): Results and Robustness}
 \textbf{Key findings:}
 \begin{itemize}
-  \item One additional robot per 1{,}000 workers $\Rightarrow$ employment
-        ratio falls by 0.18--0.34 pp and wages by 0.25--0.5\%
-  \item Roughly 400{,}000--670{,}000 jobs displaced by robots over
-        1990--2007
-  \item Effects concentrated in manufacturing; no significant offsetting
-        job creation in other sectors
-  \item Larger effects for lower-skill, routine-task workers
+  \item Juvenile incarceration \emph{reduces} high school graduation
+        by $\approx$\textbf{13 percentage points}
+  \item Juvenile incarceration \emph{increases} adult incarceration
+        probability by $\approx$\textbf{22--26 percentage points}
+  \item Earnings are reduced significantly; effects persist for decades
+  \item Net cost-benefit analysis: incarceration costs society roughly
+        \$1.1--1.4 million per juvenile (present value), far exceeding
+        any deterrence benefit
 \end{itemize}
 
 \medskip
 \textbf{Robustness and sensitivity:}
 \begin{itemize}
-  \item \emph{Pre-trend test}: robot exposure does not predict 1970--1990
-        employment trends (no pre-existing differences)
-  \item \emph{Alternative shares}: using 1970 industry shares (farther
-        from the robot wave) gives similar results
-  \item \emph{Excluding auto-heavy CZs}: dropping the Midwest
-        automotive belt does not materially change estimates
-  \item \emph{China competition control}: conditioning on ADH-style
-        Chinese import competition exposure leaves robot effects intact
-  \item \emph{Clustering}: results robust to CZ, state, and
-        industry clustering
+  \item \emph{Balance test}: judge leniency is uncorrelated with defendant
+        race, prior offenses, and offense severity (random assignment holds)
+  \item \emph{Placebo}: judge leniency does not predict pre-offense
+        outcomes (no pre-existing differences across complier groups)
+  \item \emph{Different charge types}: results hold across assault, drug,
+        property, and public order offenses
+  \item \emph{Bandwidth variation}: narrowing the leave-one-out window
+        (same offense type only) gives similar results
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Acemoglu \& Restrepo (2020): Contribution and IV Lessons}
+\begin{frame}{Aizer \& Doyle (2015): Contribution and IV Lessons}
 \textbf{Academic contributions:}
 \begin{itemize}
-  \item Provides first rigorous causal evidence that robots reduce employment
-        and wages---fueling the automation-inequality debate
-  \item Methodologically pairs theory (task-based model) with credible
-        causal identification
-  \item Spawned a large literature on technology, automation, and
-        labor market polarization
+  \item First causal evidence that juvenile incarceration \emph{increases}
+        adult criminality and reduces human capital---a critical finding for
+        criminal justice reform debates
+  \item Demonstrates that the criminal justice system can perpetuate rather
+        than reduce criminal behavior through incapacitation effects
+  \item Extended the judge-leniency IV approach (Kling 2006) to juvenile
+        settings and linked to long-run human capital outcomes
 \end{itemize}
 
 \medskip
 \textbf{IV methodology lessons:}
 \begin{itemize}
-  \item The \textbf{Bartik shift-share} design (industry shares $\times$
-        global shocks) is now a standard tool in regional economics---see
-        also Borusyak, Hull, Jaravel (2022) for formal conditions
-  \item Foreign-country shocks are a natural exogeneity source when
-        domestic conditions are confounded
-  \item Pre-trend and placebo tests are essential for validating
-        the parallel-trends implicit in share-based instruments
-  \item SSIV formal theory and China HSR illustration are covered in
-        Session~2
+  \item \textbf{Judge/examiner leniency IV} is now a standard tool whenever
+        administrative decisions are quasi-randomly assigned
+  \item Key to validity: \emph{random} (not quasi-random) assignment within
+        strata is what makes the exclusion credible
+  \item \textbf{LATE}: IV identifies the effect among ``compliers''---juveniles
+        whose incarceration decision is swayed by judge assignment, typically
+        those near the incarceration margin
+  \item Long-run outcomes require linking administrative datasets across
+        agencies (courts, schools, IRS, corrections)
 \end{itemize}
 \end{frame}
 
@@ -681,23 +686,24 @@ long differences (1990--2000, 2000--2007).
 \small
 \begin{tabular}{lll}
 \toprule
- & \textbf{Nunn \& Qian (2014)} & \textbf{Acemoglu \& Restrepo (2020)} \\
+ & \textbf{MMS (2013)} & \textbf{AD (2015)} \\
 \midrule
-Journal & AER & JPE \\
-Setting & Developing countries (Africa) & US commuting zones \\
-Treatment & US food aid flows & Robot adoption rate \\
-IV type & Interaction (shock $\times$ exposure) & Bartik shift-share \\
-Exog.\ source & US wheat production & Foreign robot adoption \\
-Unit & Country $\times$ year & CZ $\times$ period \\
-Key finding & Aid $\uparrow$ conflict & Robots $\downarrow$ employment \& wages \\
-Citations & $\approx$1{,}700 & $\approx$1{,}800 \\
+Journal & AER & QJE \\
+Setting & US SSDI applicants & US juvenile defendants \\
+Treatment & SSDI benefit receipt & Juvenile incarceration \\
+IV type & Examiner leniency & Judge leniency \\
+Assignment & Quasi-random (within DDS office) & Random (within courthouse) \\
+Unit & Individual applicant & Individual defendant \\
+Key finding & SSDI $\downarrow$ employment 28pp & Incarceration $\downarrow$ graduation 13pp \\
+Citations & $\approx$1{,}300 & $\approx$900 \\
 \bottomrule
 \end{tabular}
 \end{center}
 \medskip
-\textbf{Common thread:} Both exploit variation from a \emph{different} level
-(global supply shocks; foreign industry adoption) that is plausibly exogenous
-to the unit of interest (recipient country; US commuting zone).
+\textbf{Common thread:} Both papers exploit \textbf{random variation in
+decision-maker leniency} to identify causal effects of high-stakes policy
+interventions. The IV design is clean, credible, and transparent --- a
+template for policy evaluation research.
 \end{frame}
 
 %=============================================================
@@ -731,10 +737,10 @@ to the unit of interest (recipient country; US commuting zone).
 \medskip
 \textbf{Applications (Top-5, Post-2010):}
 \begin{itemize}
-  \item Nunn \& Qian (2014, AER): food aid $\Rightarrow$ conflict using
-        interaction IV
-  \item Acemoglu \& Restrepo (2020, JPE): robots $\Rightarrow$ employment
-        loss using Bartik IV
+  \item Maestas, Mullen \& Strand (2013, AER): examiner leniency IV
+        $\Rightarrow$ SSDI receipt reduces employment by 28pp
+  \item Aizer \& Doyle (2015, QJE): judge leniency IV $\Rightarrow$
+        juvenile incarceration reduces graduation and increases re-offending
 \end{itemize}
 \end{frame}
 
