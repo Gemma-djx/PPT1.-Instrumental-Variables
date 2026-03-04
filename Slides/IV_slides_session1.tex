@@ -401,24 +401,32 @@ Overidentified 2SLS faces an additional problem when there are many weak instrum
 \section{Classic Applications: Top-5 Journal Papers}
 %=============================================================
 
-\begin{frame}{Overview: Two Landmark IV Papers (Post-2010, Top-5 Journals)}
-We study two highly cited papers that use \textbf{non-shift-share} IV designs
-to establish causal relationships:
+\begin{frame}{Session 1 Applications: Four Classic IV Papers}
+{\small
+We study four highly cited papers illustrating core IV designs:
+
+\medskip
+\textbf{Decision-maker leniency IV (Western context):}
 \begin{enumerate}
   \item \textbf{Maestas, Mullen, and Strand (2013, \emph{AER})}\\
         ``Does Disability Insurance Receipt Discourage Work?''\\
-        {\small IV: randomly assigned Social Security disability examiners.
-        Context: US disability insurance applicants.}
-  \medskip
+        IV: quasi-randomly assigned SSDI disability examiners.
   \item \textbf{Aizer and Doyle (2015, \emph{QJE})}\\
         ``Juvenile Incarceration, Human Capital, and Future Crime''\\
-        {\small IV: randomly assigned juvenile court judges.
-        Context: US juvenile criminal justice system.}
+        IV: randomly assigned juvenile court judges.
 \end{enumerate}
+
 \medskip
-Both papers use \textbf{random assignment of decision-makers} as the
-identifying instrument---a design that is transparent, credible, and
-widely applicable in policy evaluation contexts.
+\textbf{Geographic and historical IV (Chinese context):}
+\begin{enumerate}\setcounter{enumi}{2}
+  \item \textbf{Qian (2008, \emph{QJE})}\\
+        ``Missing Women and the Price of Tea in China''\\
+        IV: county agricultural suitability for tea cultivation.
+  \item \textbf{Chen, Kung, and Ma (2020, \emph{QJE})}\\
+        ``Long Live Keju!''\\
+        IV: historical imperial examination quota allocation.
+\end{enumerate}
+}
 \end{frame}
 
 % ------ Paper 1: Maestas, Mullen & Strand (2013) ------
@@ -448,6 +456,7 @@ Insurance (SSDI) benefits \emph{cause} a reduction in employment?
 \end{frame}
 
 \begin{frame}{MMS (2013): Examiner Assignment IV Strategy}
+{\small
 \textbf{The IV:} Randomly assigned disability examiners differ
 systematically in their allowance rates (``leniency''):
 \begin{itemize}
@@ -458,7 +467,7 @@ systematically in their allowance rates (``leniency''):
   \item An examiner's average grant rate (leave-one-out, in other cases)
         is used as the instrument for the applicant's SSDI receipt
 \end{itemize}
-\medskip
+\smallskip
 \textbf{IV validity:}
 \begin{itemize}
   \item \textbf{Relevance}: examiner leniency strongly predicts own award
@@ -470,6 +479,7 @@ systematically in their allowance rates (``leniency''):
   \item \textbf{Monotonicity}: a stricter examiner can only reduce (never
         increase) an applicant's probability of receiving SSDI
 \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{MMS (2013): Data and Specification}
@@ -499,6 +509,7 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
 \end{frame}
 
 \begin{frame}{MMS (2013): Results and Robustness}
+{\small
 \textbf{Key findings:}
 \begin{itemize}
   \item SSDI receipt reduces employment by $\approx$\textbf{28 percentage
@@ -509,8 +520,7 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
   \item OLS understates the causal effect because rejected applicants
         who remain employed create a spurious positive ``health effect''
 \end{itemize}
-
-\medskip
+\smallskip
 \textbf{Robustness and sensitivity:}
 \begin{itemize}
   \item \emph{Placebo test}: examiner leniency does not predict
@@ -523,9 +533,11 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
         and have higher prior earnings than average recipients, explaining
         why SSDI receipt suppresses their employment substantially
 \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{MMS (2013): Contribution and IV Lessons}
+{\small
 \textbf{Academic contributions:}
 \begin{itemize}
   \item First credible causal estimate of SSDI's effect on employment;
@@ -536,8 +548,7 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
         a large literature on disability insurance, screening, and
         physician/administrative judgment
 \end{itemize}
-
-\medskip
+\smallskip
 \textbf{IV methodology lessons:}
 \begin{itemize}
   \item \textbf{Random assignment of decision-makers} is a powerful source
@@ -550,6 +561,7 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
   \item Strata fixed effects (DDS-quarter) are essential to isolate
         within-office random variation
 \end{itemize}
+}
 \end{frame}
 
 % ------ Paper 2: Aizer & Doyle (2015) ------
@@ -578,6 +590,7 @@ their subsequent criminal activity and human capital?
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Judge IV Strategy}
+{\small
 \textbf{The IV:} Randomly assigned juvenile court judges vary in their
 propensity to incarcerate:
 \begin{itemize}
@@ -588,7 +601,7 @@ propensity to incarcerate:
   \item A judge's leave-one-out incarceration rate on other cases is the
         instrument for whether defendant $i$ is incarcerated
 \end{itemize}
-\medskip
+\smallskip
 \textbf{IV validity:}
 \begin{itemize}
   \item \textbf{Relevance}: judge leniency strongly predicts incarceration
@@ -600,6 +613,7 @@ propensity to incarcerate:
   \item \textbf{Monotonicity}: a stricter judge cannot reduce a defendant's
         incarceration probability (one-directional instrument)
 \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Data and Specification}
@@ -628,6 +642,7 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Results and Robustness}
+{\small
 \textbf{Key findings:}
 \begin{itemize}
   \item Juvenile incarceration \emph{reduces} high school graduation
@@ -639,8 +654,7 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
         \$1.1--1.4 million per juvenile (present value), far exceeding
         any deterrence benefit
 \end{itemize}
-
-\medskip
+\smallskip
 \textbf{Robustness and sensitivity:}
 \begin{itemize}
   \item \emph{Balance test}: judge leniency is uncorrelated with defendant
@@ -652,9 +666,11 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
   \item \emph{Bandwidth variation}: narrowing the leave-one-out window
         (same offense type only) gives similar results
 \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Contribution and IV Lessons}
+{\small
 \textbf{Academic contributions:}
 \begin{itemize}
   \item First causal evidence that juvenile incarceration \emph{increases}
@@ -665,8 +681,7 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
   \item Extended the judge-leniency IV approach (Kling 2006) to juvenile
         settings and linked to long-run human capital outcomes
 \end{itemize}
-
-\medskip
+\smallskip
 \textbf{IV methodology lessons:}
 \begin{itemize}
   \item \textbf{Judge/examiner leniency IV} is now a standard tool whenever
@@ -679,6 +694,7 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
   \item Long-run outcomes require linking administrative datasets across
         agencies (courts, schools, IRS, corrections)
 \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{Comparing the Two Papers}
@@ -706,11 +722,164 @@ interventions. The IV design is clean, credible, and transparent --- a
 template for policy evaluation research.
 \end{frame}
 
+% ------ Chinese Paper 3: Qian (2008) ------
+\begin{frame}{Paper~3: Qian (2008, \emph{QJE}) --- Missing Women in China}
+\begin{block}{Citation}
+  Qian, N.\ (2008).
+  ``Missing Women and the Price of Tea in China.''
+  \textit{Quarterly Journal of Economics}, 123(3): 1251--1285.
+  {\small($\approx$3{,}500 Google Scholar citations)}
+\end{block}
+
+\textbf{Research question:} Does the relative economic value of female
+labor reduce female mortality (the ``missing women'' phenomenon)?
+
+\medskip
+\textbf{Context \& motivation:}
+\begin{itemize}
+  \item Amartya Sen (1990): $\approx$100 million ``missing'' women in Asia
+        due to son preference, sex-selective abortion, and differential care
+  \item China's 1978--79 decollectivization let farmers sell surplus produce;
+        crop suitability became critical for household income
+  \item OLS is biased: regions with higher female wages may differ in
+        institutions, culture, and law enforcement
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Qian (2008): Geographic IV Design}
+{\small
+\textbf{The IV:} County-level agricultural suitability for tea vs.\ orchard
+cultivation (determined by soil acidity, rainfall, and elevation):
+\begin{itemize}
+  \item Tea cultivation is female-labor intensive; orchards are male-labor
+        intensive---so tea suitability raises relative female wages
+  \item Suitability is geographically predetermined and exogenous to
+        son-preference norms and government policy
+  \item Treatment: post-reform relative female income; Outcome: sex ratio
+        at ages 0--5 and girls' survival rates
+\end{itemize}
+\smallskip
+\textbf{IV validity:}
+\begin{itemize}
+  \item \textbf{Relevance}: tea suitability $\times$ post-1978 period
+        strongly predicts female-to-male income ratio (first-stage $F > 40$)
+  \item \textbf{Independence}: soil/terrain characteristics are not
+        correlated with gender preferences or other cultural confounders
+  \item \textbf{Exclusion}: tea suitability affects sex ratios only through
+        its effect on relative female income (falsification: no pre-reform
+        relationship between tea suitability and sex ratios)
+\end{itemize}
+}
+\end{frame}
+
+\begin{frame}{Qian (2008): Results and IV Lessons}
+{\small
+\textbf{Key findings:}
+\begin{itemize}
+  \item A 10\% increase in female relative income reduces the sex ratio
+        at ages 0--5 by $\approx$2--3\%---significant recovery of missing girls
+  \item Effects are driven by increased female survival, not changes in
+        sex-selective abortion---consistent with reduced neglect and better care
+  \item Results survive controls for pre-existing trends, income levels,
+        and province fixed effects
+\end{itemize}
+\smallskip
+\textbf{IV methodology lessons:}
+\begin{itemize}
+  \item \textbf{Geographic/agricultural suitability} (soil, terrain, climate)
+        is a classic source of exogenous variation in development economics---
+        it directly affects economic activity but is predetermined with respect
+        to social outcomes
+  \item The pre/post-reform DID structure is transparent: tea-suitable
+        counties gain more after 1978, creating cross-sectional IV variation
+  \item Falsification: no relationship between tea suitability and pre-reform
+        sex ratios confirms the independence assumption
+\end{itemize}
+}
+\end{frame}
+
+% ------ Chinese Paper 4: Chen, Kung, Ma (2020) ------
+\begin{frame}{Paper~4: Chen, Kung, and Ma (2020, \emph{QJE}) --- Long Live Keju!}
+\begin{block}{Citation}
+  Chen, T., Kung, J.K.S., and Ma, C.\ (2020).
+  ``Long Live Keju! The Persistent Effects of China's Imperial
+  Examination System.''
+  \textit{Quarterly Journal of Economics}, 135(4): 1801--1846.
+  {\small($\approx$600 Google Scholar citations)}
+\end{block}
+
+\textbf{Research question:} Did China's Imperial Examination System (Keju,
+605--1905 AD) leave persistent effects on human capital and development?
+
+\medskip
+\textbf{Context \& motivation:}
+\begin{itemize}
+  \item The Keju selected government officials through standardized exams;
+        meritocracy incentivized education across the population
+  \item Counties differed dramatically in exam-slot quotas due to
+        administrative allocation---creating cross-county variation
+  \item OLS is biased: counties with more scholars may have had better
+        institutions, more resources, or geographic advantages
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Chen, Kung \& Ma (2020): Historical Quota IV}
+{\small
+\textbf{The IV:} Imperial-era Keju examination quotas allocated to each
+county by the Qing government based on \emph{tax revenue}:
+\begin{itemize}
+  \item Quotas were assigned for fiscal/administrative convenience---not
+        educational merit---creating plausibly exogenous variation
+  \item Higher quotas $\Rightarrow$ more aspiring candidates $\Rightarrow$
+        stronger culture of human capital investment
+  \item Treatment: historical Keju scholar density per county;
+        Outcomes: modern GDP, education levels, private entrepreneurship
+\end{itemize}
+\smallskip
+\textbf{IV validity:}
+\begin{itemize}
+  \item \textbf{Relevance}: quota allocation strongly predicts scholar
+        density (first-stage $F > 50$)
+  \item \textbf{Independence}: quotas uncorrelated with modern economic
+        potential after controlling for the county tax base (the source of
+        quota variation)
+  \item \textbf{Exclusion}: quotas affect modern outcomes only through
+        cultural/human capital persistence; direct fiscal effects from
+        Qing-era quotas have long dissipated
+\end{itemize}
+}
+\end{frame}
+
+\begin{frame}{Chen, Kung \& Ma (2020): Results and IV Lessons}
+{\small
+\textbf{Key findings:}
+\begin{itemize}
+  \item A 1-SD increase in Keju scholar density raises modern county GDP
+        per capita by $\approx$6--8\%
+  \item Effects operate through education channels: higher Keju exposure
+        $\Rightarrow$ more schools, higher literacy, more private entrepreneurs
+  \item Robust to controls for geography, Ming-dynasty institutions,
+        province fixed effects, and multiple outcome time periods
+\end{itemize}
+\smallskip
+\textbf{IV methodology lessons:}
+\begin{itemize}
+  \item \textbf{Historical administrative records} provide rich sources of
+        exogenous variation when modern experimental designs are infeasible
+  \item Long-run persistence studies rely heavily on a credible exclusion
+        restriction: document and test all plausible alternative channels
+  \item The exclusion is bolstered by \emph{mediation analysis}: tracing
+        the Keju $\to$ education $\to$ development pathway directly
+\end{itemize}
+}
+\end{frame}
+
 %=============================================================
 \section{Summary}
 %=============================================================
 
 \begin{frame}{Session 1 Summary}
+{\small
 \textbf{IV Foundations:}
 \begin{itemize}
   \item IV validity requires relevance, independence, and exclusion
@@ -718,30 +887,32 @@ template for policy evaluation research.
   \item With controls: effective instrument $\tilde Z_i$ = residual of
         $Z_i$ on $W_i$ (Frisch--Waugh)
 \end{itemize}
-
-\medskip
+\smallskip
 \textbf{2SLS and Overidentification:}
 \begin{itemize}
   \item 2SLS = efficiency-optimal combination of multiple instruments
   \item 2SLS = weighted average of just-identified IVs
   \item Sargan--Hansen test: diagnostic, not a ``certification of validity''
 \end{itemize}
-
-\medskip
+\smallskip
 \textbf{Instrument Strength:}
 \begin{itemize}
   \item $F>10$ rule of thumb; \texttt{weakivtest} for robust critical values
   \item Many-IV bias: overfitting first stage recreates endogeneity
 \end{itemize}
-
-\medskip
-\textbf{Applications (Top-5, Post-2010):}
+\smallskip
+\textbf{Applications (Top-5 Journals):}
 \begin{itemize}
-  \item Maestas, Mullen \& Strand (2013, AER): examiner leniency IV
-        $\Rightarrow$ SSDI receipt reduces employment by 28pp
+  \item MMS (2013, AER): examiner leniency IV $\Rightarrow$ SSDI reduces
+        employment by 28pp
   \item Aizer \& Doyle (2015, QJE): judge leniency IV $\Rightarrow$
-        juvenile incarceration reduces graduation and increases re-offending
+        juvenile incarceration harms graduation and raises re-offending
+  \item Qian (2008, QJE): geographic IV (tea suitability) $\Rightarrow$
+        female income gains reduce ``missing women'' in China
+  \item Chen, Kung \& Ma (2020, QJE): historical quota IV $\Rightarrow$
+        Keju system raises long-run human capital in China
 \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{Preview: Session 2}
@@ -759,7 +930,7 @@ template for policy evaluation research.
     \item Illustration: China High-Speed Rail market access
   \end{itemize}
   \medskip
-  \item \textbf{IV with Chinese Economic Context}
+  \item \textbf{Chinese Economic Applications}
   \begin{itemize}
     \item Meng, Qian, Yared (2015, \emph{ReStud}): Great Famine IV
     \item Khandelwal, Schott, Wei (2013, \emph{QJE}): WTO quota removal
