@@ -1,0 +1,150 @@
+% ============================================================
+%  DUFE Beamer Preamble --- Empirical Methods for PhD Students
+%  Jingxuan Du, Dongbei University of Finance and Economics
+% ============================================================
+
+% ---------- Beamer theme and colors --------------------------
+\usetheme{Boadilla}
+
+\definecolor{dufenavy}{HTML}{003f6b}
+\definecolor{dufeteal}{HTML}{1a6e82}
+\definecolor{dufelightblue}{HTML}{e8f2f8}
+\definecolor{dufegold}{HTML}{c8860a}
+\definecolor{dufegray}{HTML}{4a4a4a}
+\definecolor{dufelightgray}{HTML}{f5f5f5}
+
+\usecolortheme[named=dufenavy]{structure}
+
+\setbeamercolor{title}{fg=white, bg=dufenavy}
+\setbeamercolor{frametitle}{fg=white, bg=dufenavy}
+\setbeamercolor{subtitle}{fg=white, bg=dufenavy}
+\setbeamercolor{author in head/foot}{fg=white, bg=dufeteal}
+\setbeamercolor{title in head/foot}{fg=white, bg=dufenavy}
+\setbeamercolor{date in head/foot}{fg=white, bg=dufeteal}
+\setbeamercolor{page number in head/foot}{fg=white, bg=dufenavy}
+\setbeamercolor{block title}{fg=white, bg=dufeteal}
+\setbeamercolor{block body}{fg=black, bg=dufelightblue}
+\setbeamercolor{alerted text}{fg=dufegold}
+\setbeamercolor{itemize item}{fg=dufenavy}
+\setbeamercolor{itemize subitem}{fg=dufeteal}
+\setbeamercolor{enumerate item}{fg=dufenavy}
+\setbeamercolor{section in toc}{fg=dufenavy}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Frame title format
+\setbeamerfont{frametitle}{size=\normalsize, series=\bfseries}
+
+% Adjust text margins
+\setbeamersize{text margin left=14pt, text margin right=14pt}
+
+% Bullet style
+\setbeamertemplate{itemize item}[circle]
+\setbeamertemplate{itemize subitem}{$\triangleright$}
+\setbeamertemplate{enumerate item}{\insertenumlabel.}
+
+% Fix spacing between items
+\let\olditemize=\itemize
+\let\endolditemize=\enditemize
+\renewenvironment{itemize}{\vspace{0.15em}\olditemize \itemsep0.2em}{\endolditemize}
+
+% ---------- Semantic color macros (keep conceptual coloring) -
+% Parameters (red), Estimands (blue), Estimators (orange)
+\newcommand\paramcol[1]{{\color{red!70!black}#1}}
+\newcommand\estimcol[1]{{\color{dufeteal}#1}}
+\newcommand\estorcol[1]{{\color{dufegold}#1}}
+
+% Background highlight boxes
+\newcommand\bgParam[1]{{\colorbox{red!15}{#1}}}
+\newcommand\bgEstim[1]{{\colorbox{dufeteal!20}{#1}}}
+\newcommand\bgEstor[1]{{\colorbox{dufegold!20}{#1}}}
+
+% Backward-compatible aliases so existing slide code still compiles
+\newcommand\violetRed[1]{\paramcol{#1}}
+\newcommand\pictonBlue[1]{\estimcol{#1}}
+\newcommand\sun[1]{\estorcol{#1}}
+\newcommand\bgVioletRed[1]{\bgParam{#1}}
+\newcommand\bgPictonBlue[1]{\bgEstim{#1}}
+\newcommand\bgSun[1]{\bgEstor{#1}}
+
+% Code font
+\def\code#1{\texttt{#1}}
+
+% ---------- Image full-frame command -----------------------
+\newcommand{\imageframe}[1]{%
+    \begin{frame}[plain]
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[at=(current page.center)] {%
+                \includegraphics[keepaspectratio,
+                    width=\paperwidth, height=\paperheight]{#1}
+            };
+        \end{tikzpicture}
+    \end{frame}%
+}
+
+% ---------- Transition frame --------------------------------
+\newenvironment{transitionframe}{%
+    \setbeamercolor{background canvas}{bg=dufenavy}%
+    \begin{frame}\color{white!90}\LARGE\centering
+}{%
+    \end{frame}%
+}
+
+% ---------- Required packages ------------------------------
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=dufenavy,
+  urlcolor=dufeteal,
+  citecolor=dufegold,
+}
+
+\usepackage{multicol}
+\usefonttheme{professionalfonts}
+
+\vfuzz2pt
+\hfuzz2pt
+
+% Tables
+\usepackage{adjustbox}
+\usepackage{array}
+\usepackage{threeparttable, booktabs, adjustbox}
+\makeatletter
+\let\input\@@input
+\makeatother
+\usepackage{tabularx}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% Figures
+\usepackage{subfigure}
+
+% TikZ for DAGs
+\usepackage{tikz}
+\usetikzlibrary{shapes,decorations,arrows,calc,arrows.meta,fit,positioning}
+\tikzset{
+    -Latex,auto,node distance=1cm and 1cm,semithick,
+    state/.style={ellipse,draw,minimum width=0.7cm},
+    point/.style={circle,draw,inner sep=0.04cm,fill,node contents={}},
+    bidirected/.style={Latex-Latex,dashed},
+    el/.style={inner sep=2pt,align=left,sloped}
+}
+
+% Table of contents
+\setbeamerfont{myTOC}{series=\bfseries, size=\Large}
+\AtBeginSection[]{
+    \frame{
+        \frametitle{Outline}
+        \tableofcontents[currentsection]
+    }
+}
+
+% Math
+\usepackage{amsmath, amssymb}
+
+% TikZ extra libraries
+\usetikzlibrary{calc}
+\usetikzlibrary{fit,shapes.misc}

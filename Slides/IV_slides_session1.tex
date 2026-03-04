@@ -1,858 +1,776 @@
 \documentclass{beamer}
-
-\input{preamble.tex}
+\input{preamble_dufe.tex}
 
 \title{Instrumental Variables}
-\subtitle{Session 1: Foundations and Mechanics}
-\author{Jingxuan Du \\ \smallskip {\small Dongbei University of Finance and Economics (DUFE)} \\ \smallskip {\small \href{mailto:dujingxuan6@dufe.edu.cn}{dujingxuan6@dufe.edu.cn}}}
+\subtitle{Session~1: Foundations and Mechanics}
+\author[Jingxuan Du]{Jingxuan Du\\[4pt]
+  {\small Dongbei University of Finance and Economics (DUFE)}\\[2pt]
+  {\small\texttt{dujingxuan6@dufe.edu.cn}}}
 \date{Empirical Methods for PhD Students}
 
 \begin{document}
 
-\imageframe{./lecture_includes/cover_intro.png}
-
-\section{Introductions}
-
-\begin{frame}{Who Am I?}
-
-A Professor of Economics at Dongbei University of Finance and Economics (DUFE)\pause
-
-A researcher working on empirical methods in economics\pause
-\begin{itemize}
-  \item Applied econometrics with a focus on causal identification
-  \item IV-based analyses in labor, trade, and development economics
-  \item Policy evaluation using quasi-experimental methods
-\end{itemize}\pause
-
-Committed to teaching rigorous, practical empirical tools to the next generation of economists
-
-\end{frame}
-
-\begin{frame}{Why IV? Motivation}
-
-Economists care about \emph{causal} effects, not just correlations\pause
-\begin{itemize}
-  \item Does education raise earnings, or do smarter people get more education?
-  \item Does trade competition hurt employment, or do weak industries seek protection?
-  \item Does infrastructure investment drive growth, or do wealthy regions get more roads?
-\end{itemize}\medskip\pause
-
-The fundamental problem: \textbf{selection bias}
-\begin{itemize}
-  \item Treatment assignment is rarely random in observational data
-  \item OLS captures both causal effects and selection differences
-\end{itemize}\medskip\pause
-
-\textbf{Instrumental variables (IV)} offer a principled solution: find a source of exogenous variation in the treatment that is unrelated to the unobserved confounders
-
-\end{frame}
-
-\begin{frame}{What Is This PhD Course?}
-
-A two-session intensive on IV methods, aimed at PhD students in economics\pause
-
-\begin{itemize}
-  \item Session 1 (today): IV mechanics, identification, and foundational applications
-  \item Session 2: IV interpretation (LATE), formula instruments, and advanced topics
-\end{itemize}\pause\medskip
-
-Emphasis on \emph{practice}: IV is a tool meant to be used in your own research!\pause
-
-\begin{itemize}
-  \item Please ask questions throughout
-  \item We will connect methods to published empirical papers
-\end{itemize}\pause\medskip
-
-Featured applications: seminal papers on \textbf{Chinese economic topics} from top journals (AER, JPE, ReStud)
-
+\begin{frame}
+  \titlepage
 \end{frame}
 
 \begin{frame}{Session 1 Roadmap}
+\tableofcontents
+\end{frame}
 
+%=============================================================
+\section{Foundations of Instrumental Variables}
+%=============================================================
+
+\begin{frame}{Three Conditions for a Valid Instrument}
+A valid instrument $Z_i$ must satisfy three conditions:
 \begin{enumerate}
-  \item \textbf{IV Mechanics}
-  \begin{itemize}
-    \item Just-identified IV: identification, estimation, inference
-    \item Overidentification and 2SLS
-    \item Weak instruments and many-IV bias
-  \end{itemize}\medskip
-  \item \textbf{Chinese Economics Applications: Session I}
-  \begin{itemize}
-    \item Paper 1: The China Syndrome (Autor, Dorn, Hanson 2013, AER)
-    \item Paper 2: Roads and Growth in China (Banerjee, Duflo, Qian 2020, JPE)
-  \end{itemize}\medskip
-  \item \textbf{Conclusions and Preview of Session 2}
+  \item \textbf{Relevance (First Stage):} $Z_i$ must be correlated with the
+        endogenous treatment $D_i$
+        \begin{itemize}
+          \item Testable: first-stage F-statistic (rule of thumb: $F>10$)
+        \end{itemize}
+  \item \textbf{Independence (As-Good-As-Random Assignment):} $Z_i$ must be
+        uncorrelated with unobserved confounders $\varepsilon_i$
+        \begin{itemize}
+          \item Not directly testable; requires economic reasoning and
+                robustness checks
+        \end{itemize}
+  \item \textbf{Exclusion Restriction:} $Z_i$ affects outcome $Y_i$
+        \emph{only} through its effect on $D_i$
+        \begin{itemize}
+          \item No direct effect; testable indirectly via placebo/falsification
+        \end{itemize}
 \end{enumerate}
-
+\medskip
+In Session~2 we add a 4th condition: \textbf{Monotonicity} (for the
+LATE interpretation).
 \end{frame}
 
-\section{IV Mechanics}
-
-\subsection{Just-Identified IV}
-
-\begin{frame}{Three Requirements for a Valid IV}
-
-A valid instrument $Z_i$ must satisfy three conditions:\medskip\pause
-
-\begin{enumerate}
-  \item \textbf{Relevance (First Stage):} $Z_i$ must be correlated with the endogenous treatment $D_i$
-  \begin{itemize}
-    \item Testable: check the first-stage F-statistic (rule of thumb: $F > 10$)
-  \end{itemize}\medskip\pause
-  \item \textbf{As-Good-As-Random Assignment (Independence):} $Z_i$ must be uncorrelated with unobserved confounders $\varepsilon_i$
-  \begin{itemize}
-    \item Not directly testable; requires economic reasoning and robustness checks
-  \end{itemize}\medskip\pause
-  \item \textbf{Exclusion Restriction:} $Z_i$ affects outcome $Y_i$ \emph{only} through its effect on $D_i$
-  \begin{itemize}
-    \item No direct effect of $Z_i$ on $Y_i$; testable indirectly via falsification
-  \end{itemize}
-\end{enumerate}\medskip\pause
-
-In Session 2, we add a 4th: \textbf{Monotonicity} (for LATE interpretation)
-
-\end{frame}
-
-\begin{frame}{Preliminaries: Parameters, Estimands, and Estimators}
+\begin{frame}{Parameters, Estimands, and Estimators}
 \vspace{-0.2cm}
-Three distinct objects, not always clearly distinguished: \pause
+Three distinct objects, not always clearly distinguished:
 {\small
 \begin{itemize}
-  \item \bgVioletRed{Parameters} come from economic (or other) models of the world
+  \item \bgParam{Parameters} come from economic (or other) models of the world
   \begin{itemize}\itemsep0em
-    \item E.g. a ``structural'' model of supply and demand, or a potential outcome model relating schooling to earnings
-    \item They set the target for empirical analyses: what we want to know
-  \end{itemize}\pause
-  
-  \item \bgPictonBlue{Estimands} are functions of the population data distribution 
+    \item E.g.\ a potential-outcome model relating schooling to earnings
+    \item They set the \emph{target} for empirical analyses: what we want to know
+  \end{itemize}
+  \item \bgEstim{Estimands} are functions of the population data distribution
   \begin{itemize}\itemsep0em
-    \item E.g. a difference in means or ratio of population regression coef's
-    \item We make assumptions to link parameters \& estimands (identification)
-  \end{itemize}\pause
-  
-  \item \bgSun{Estimators} are functions of observed data (i.e. the ``sample'')
+    \item E.g.\ a difference in means or ratio of population regression coefficients
+    \item Identification: assumptions that link parameters to estimands
+  \end{itemize}
+  \item \bgEstor{Estimators} are functions of observed (sample) data
   \begin{itemize}\itemsep0em
-    \item E.g. a difference in sample means or ratio of OLS coefficients 
-    \item Since data are random, so are estimators. Each has a distribution
-    \item We use knowledge of estimator distributions to learn about estimands (inference) and thus identified parameters
+    \item E.g.\ a sample ratio of OLS coefficients
+    \item Estimators are random variables; statistical inference studies their distribution
   \end{itemize}
 \end{itemize}
 }
 \end{frame}
 
 \begin{frame}{The Lay of the Land}
-  \begin{adjustbox}{width = 0.9\textwidth, center}
-    \begin{tikzpicture}
-      \node[violet-red] (theory) at (-3.5, 1.25) {Economic Theory};
-      \node[state,rectangle,violet-red] (parameters) at (-3.5, 0) {Parameters};
-      
-      \node[picton-blue] (distribution) at (0, 1.25) {Data Distribution};
-      \node[state,rectangle,picton-blue] (estimands) at (0, 0) {Estimands};
+\begin{adjustbox}{width=0.9\textwidth,center}
+\begin{tikzpicture}
+  \node[red!70!black] (theory) at (-3.5,1.25) {Economic Theory};
+  \node[state,rectangle,red!70!black] (parameters) at (-3.5,0) {Parameters};
+  \node[dufeteal] (distribution) at (0,1.25) {Data Distribution};
+  \node[state,rectangle,dufeteal] (estimands) at (0,0) {Estimands};
+  \node[dufegold] (data) at (3.5,1.25) {Observed Datasets};
+  \node[state,rectangle,dufegold] (estimators) at (3.5,0) {Estimators};
+  \path[red!70!black,thick,shorten >=4pt] (theory) edge (parameters);
+  \path[dufeteal,thick,shorten >=4pt] (distribution) edge (estimands);
+  \path[dufegold,thick,shorten >=4pt] (data) edge (estimators);
+  \path[thick,shorten >=4pt,shorten <=4pt]
+        (estimands) edge[bend left=40] node[below,el,yshift=-4pt] {Identification} (parameters);
+  \path[thick,shorten >=4pt,shorten <=4pt]
+        (estimators) edge[bend left=40] node[below,el,yshift=-4pt] {Statistical Inference} (estimands);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{8mm}
 
-      \node[sun] (data) at (3.5, 1.25) {Observed Datasets};
-      \node[state,rectangle,sun] (estimators) at (3.5, 0) {Estimators};
-
-      \path[violet-red, thick, shorten >=4pt] (theory) edge (parameters);
-      \path[picton-blue, thick, shorten >=4pt] (distribution) edge (estimands);
-      \path[sun, thick, shorten >=4pt] (data) edge (estimators);
-
-      \path[thick, shorten >=4pt, shorten <=4pt] (estimands) edge[bend left= 40] node[below, el, yshift=-4pt] {Identification} (parameters);
-      \path[thick, shorten >=4pt, shorten <=4pt] (estimators) edge[bend left= 40] node[below, el, yshift=-4pt] {Statistical Inference} (estimands);
-    \end{tikzpicture}
-  \end{adjustbox}
-
-  \vspace{10mm}
-  Separating out the very different tasks of identification and inference can help make our lives easier\smallskip\pause{}
-\begin{itemize}
-\item Today we'll start with the mechanics of IV estimands, talk briefly about estimation, then spend some time talking about identification
-\end{itemize}
+Separating identification (linking parameters to estimands) from inference
+(linking estimators to estimands) keeps the analysis disciplined.
 \end{frame}
 
-\begin{frame}{An Example}
-Human capital theory tells us that taking econometrics courses will likely boost later-life productivity\pause
-\begin{itemize}
-  \item Parameter: returns to enrolling in this course $\violetRed{\beta}$, measured in some outcome $Y_i$ (e.g. lifetime earnings or \# of top publications)
-  \item Simple causal model: $Y_i= \violetRed{\beta} D_i + \varepsilon_i$, where $D_i \in \{0,1\}$ indicates enrollment and $\varepsilon_i$ is $i$'s outcome without the course
-\end{itemize}\pause\medskip
+\begin{frame}{The Endogeneity Problem}
+Simple causal model: $Y_i = \violetRed{\beta}\,D_i + \varepsilon_i$, where $D_i$ is the
+treatment, $\varepsilon_i$ is the unobserved term.
 
-We observe $Y_i$ and $D_i$ for some sample of individuals $i=1,\dots,N$
-\begin{itemize}
-  \item We fire up Stata and \code{reg Y D, r}. \pause{} How do we interpret the results?
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Population Regression and Endogeneity}
-In large samples ($N\rightarrow\infty$), the OLS \emph{estimator} $\sun{\widehat{\beta}^{OLS}}$ gets arbitrarily close to (consistently estimates) the regression \emph{estimand} $\pictonBlue{\beta^{OLS}}$\pause
-\begin{itemize} 
-\item The \emph{identification} question is thus whether or not $\pictonBlue{\beta^{OLS}}=\violetRed{\beta}$
-\end{itemize}\medskip\pause{}
-By definition, $\pictonBlue{\beta^{OLS}}=\frac{Cov(Y_i,D_i)}{Var(D_i)}$.\pause{} Plugging in our causal model:
-\begin{align*}
-\pictonBlue{\beta^{OLS}} &= \frac{Cov( \violetRed{\beta} D_i + \varepsilon_i,D_i)}{Var(D_i)}\\ \pause{}
-&=\violetRed{\beta} + \frac{Cov(\varepsilon_i,D_i)}{Var(D_i)}
-\end{align*}\pause{}
-Thus, we have (regression) identification if and only if $Cov(\varepsilon_i,D_i)=0$\smallskip
-\begin{itemize}\pause{}
-\item Selection bias: people with certain potential outcomes $\varepsilon_i$ are more/less likely to take this course, such that $Cov(\varepsilon_i,D_i)\neq 0$
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Regression ``Exogeneity''}
-  \begin{adjustbox}{width = 0.6\textwidth, center}
-    \begin{tikzpicture}
-      \node[state] (D) at (0,0) {$D$};
-      \node[state] (Y) at (2,0) {$Y$};
-      \node[state, ruby] (epsilon) at (1,1.5) {$\epsilon$};
-    
-      \path[violet-red, thick] (D) edge node[above, el] {$\violetRed{\beta}$} (Y);
-      \path[ruby, thick] (epsilon) edge (Y);
-    \end{tikzpicture}
-  \end{adjustbox}
-\end{frame}
-
-\begin{frame}{Regression ``Endogeneity''}
-  \begin{adjustbox}{width = 0.6\textwidth, center}
-    \begin{tikzpicture}
-      \node[state] (D) at (0,0) {$D$};
-      \node[state] (Y) at (2,0) {$Y$};
-      \node[state, ruby] (epsilon) at (1,1.5) {$\epsilon$};
-    
-      \path[violet-red, thick] (D) edge node[above, el] {$\violetRed{\beta}$} (Y);
-      \path[ruby, thick] (epsilon) edge (Y);
-      \path[ruby, thick] (epsilon) edge (D);
-    \end{tikzpicture}
-  \end{adjustbox}
-\end{frame}
-
-\begin{frame}{The IV Solution}
-
-Suppose this course was ``oversubscribed'' (more people wanted to attend than space allowed), so seats were determined by lottery
-\begin{itemize}
-\item $Z_i\in\{0,1\}$ indicates randomized admission to the course\pause{}
-\item Randomness + no direct effects of $Z_i$ on $Y_i$ implies $Cov(Z_i,\varepsilon_i)=0$
-\end{itemize}\medskip\pause{}
-
-Plugging in the model for $\varepsilon_i=Y_i-\violetRed{\beta} D_i$, we now have IV identification:
-\begin{align*}
-Cov(Z_i,Y_i-\violetRed{\beta} D_i)=0 \pause{} \implies \violetRed{\beta} = \frac{Cov(Z_i,Y_i)}{Cov(Z_i,D_i)}\pause{}\equiv \pictonBlue{\beta^{IV}},
-\end{align*}
-so long as $Cov(Z_i,D_i)\neq 0$.\pause{} We can estimate this by $\sun{\widehat{\beta}^{IV}}=\frac{\widehat{Cov}(Z_i,Y_i)}{\widehat{Cov}(Z_i,D_i)}$\pause{}
-\begin{itemize}
-\item Or, in Stata, \code{ivreg2 Y (D=Z), r}
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{The IV Solution}
-  \begin{adjustbox}{width = 0.7\textwidth, center}
-    \begin{tikzpicture}
-      \node[state] (D) at (0,0) {$D$};
-      \node[state] (Y) at (2,0) {$Y$};
-      \node[state, ruby] (epsilon) at (1,1.5) {$\epsilon$};
-      \node[state, kelly] (Z) at (-2,0) {$Z$};
-    
-      \path[violet-red, thick] (D) edge node[above, el] {$\violetRed{\beta}$} (Y);
-      \path[ruby, thick] (epsilon) edge (Y);
-      \path[ruby, thick] (epsilon) edge (D);
-      \path[kelly, thick] (Z) edge (D);
-    \end{tikzpicture}
-  \end{adjustbox}
 \bigskip
+In large samples, OLS converges to:
+\[
+\pictonBlue{\beta^{OLS}} = \violetRed{\beta} +
+  \frac{Cov(\varepsilon_i,D_i)}{Var(D_i)}
+\]
+\begin{itemize}
+  \item OLS identifies $\violetRed{\beta}$ \emph{only if} $Cov(\varepsilon_i,D_i)=0$
+  \item \textbf{Selection bias}: units with higher/lower $\varepsilon_i$ select into
+        treatment, so $Cov(\varepsilon_i,D_i)\ne0$
+\end{itemize}
 
-Note: no arrow connecting $\varepsilon$ and $Z$ (``as-good-as-random assignment''), and no arrow from $Z$ to $Y$ directly (``exclusion''). We'll come back to both
+\bigskip
+\textbf{Causal diagram:}
+\begin{adjustbox}{width=0.55\textwidth,center}
+\begin{tikzpicture}
+  \node[state] (D) at (0,0) {$D$};
+  \node[state] (Y) at (2,0) {$Y$};
+  \node[state,red!70!black] (eps) at (1,1.4) {$\varepsilon$};
+  \path[dufenavy,thick] (D) edge node[above,el]{$\violetRed{\beta}$} (Y);
+  \path[red!70!black,thick] (eps) edge (Y);
+  \path[red!70!black,thick] (eps) edge (D);
+\end{tikzpicture}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{The IV Solution}
+Suppose $Z_i\in\{0,1\}$ is a binary instrument (e.g.\ lottery assignment).
+\begin{itemize}
+  \item \textbf{Randomness}: $Cov(Z_i,\varepsilon_i)=0$
+        (no direct link to unobservables)
+  \item \textbf{Exclusion}: $Z_i$ affects $Y_i$ only through $D_i$
+\end{itemize}
+\bigskip
+Plugging in $\varepsilon_i=Y_i-\violetRed{\beta}D_i$:
+\[
+Cov(Z_i,Y_i-\violetRed{\beta}D_i)=0
+\;\implies\;
+\violetRed{\beta} = \frac{Cov(Z_i,Y_i)}{Cov(Z_i,D_i)}
+\equiv \pictonBlue{\beta^{IV}},
+\]
+so long as $Cov(Z_i,D_i)\ne0$ (relevance).\medskip
+
+\textbf{Causal diagram (IV adds $Z$):}
+\begin{adjustbox}{width=0.62\textwidth,center}
+\begin{tikzpicture}
+  \node[state] (D) at (0,0) {$D$};
+  \node[state] (Y) at (2,0) {$Y$};
+  \node[state,red!70!black] (eps) at (1,1.4) {$\varepsilon$};
+  \node[state,dufeteal] (Z) at (-2,0) {$Z$};
+  \path[dufenavy,thick] (D) edge node[above,el]{$\violetRed{\beta}$} (Y);
+  \path[red!70!black,thick] (eps) edge (Y);
+  \path[red!70!black,thick] (eps) edge (D);
+  \path[dufeteal,thick] (Z) edge (D);
+\end{tikzpicture}
+\end{adjustbox}
+
+No arrow from $Z$ to $\varepsilon$ (independence) and no arrow from $Z$
+to $Y$ (exclusion).
 \end{frame}
 
 \begin{frame}{Reduced Form and First Stage}
-
-We're usually pretty comfortable w/regression; IV feels more mysterious\smallskip
+A simple decomposition links IV back to familiar OLS regressions:
+\[
+\pictonBlue{\beta^{IV}}
+ = \frac{Cov(Z_i,Y_i)}{Cov(Z_i,D_i)}
+ = \frac{Cov(Z_i,Y_i)/Var(Z_i)}{Cov(Z_i,D_i)/Var(Z_i)}
+ \equiv \frac{\pictonBlue{\rho}}{\pictonBlue{\pi}}
+\]
+where $\pictonBlue{\rho}$ and $\pictonBlue{\pi}$ come from two OLS regressions:
+\begin{align*}
+Y_i &= \kappa + \pictonBlue{\rho}\,Z_i + \nu_i
+    \quad \text{(``reduced form'')} \\
+D_i &= \mu  + \pictonBlue{\pi}\,Z_i + \eta_i
+    \quad \text{(``first stage'')}
+\end{align*}
 \begin{itemize}
-\item But ``one weird trick'' links the IV estimand back to regression:
-\begin{align*}
-\pictonBlue{\beta^{IV}} = \frac{Cov(Z_i,Y_i)}{Cov(Z_i,D_i)} \pause = \frac{Cov(Z_i,Y_i)/Var(Z_i)}{Cov(Z_i,D_i)/Var(Z_i)} \pause \equiv \frac{\pictonBlue{\rho}}{\pictonBlue{\pi}}
-\end{align*}
-where $\pictonBlue{\rho}$ and $\pictonBlue{\pi}$ come from two population regressions:
-\begin{align*}
-Y_i &= \kappa+ \pictonBlue{\rho} Z_i + \nu_i \hspace{0.2cm}\text{The ``reduced form''}\\
-D_i &= \mu + \pictonBlue{\pi} Z_i + \eta_i\hspace{0.2cm}\text{The ``first stage''}
-\end{align*}
+  \item The \textbf{first stage} shows how strongly $Z_i$ moves $D_i$
+  \item The \textbf{reduced form} shows the net effect of $Z_i$ on $Y_i$
+  \item IV scales the reduced form by the first stage to recover $\violetRed{\beta}$
 \end{itemize}
-
 \end{frame}
-
-\begin{frame}{Angrist (1990): Draft Lottery IV}
-
-Angrist famously used Vietnam-era draft eligibility as an instrument to estimate the earnings effects of military service 
-\begin{itemize}
-\item Let $Z_i\in\{0,1\}$ be an indicator for draft eligibility, $D_i\in\{0,1\}$ be an indicator for military service, and $Y_i$ measure later-life earnings
-\end{itemize}\medskip\pause
-
-Here $\pictonBlue{\beta^{IV}} = \frac{Cov(Z_i,Y_i)/Var(Z_i)}{Cov(Z_i,D_i)/Var(Z_i)} = \frac{E[Y_i\mid Z_i=1]-E[Y_i\mid Z_i=0]}{E[D_i\mid Z_i=1]-E[D_i\mid Z_i=0]}$ has a special name, because $Z_i$ is binary: the \bgPictonBlue{Wald estimand}\pause{}
-\begin{itemize}
-\item First stage $E[D_i\mid Z_i=1]-E[D_i\mid Z_i=0]$: effect of eligibility on the \emph{probability} of military service (b/c $D_i$ is binary)
-\item Reduced form $E[Y_i\mid Z_i=1]-E[Y_i\mid Z_i=0]$: effect of eligibility on adult earnings (measured in 1971, 1981...)
-\end{itemize}\medskip\pause
-
-IV interprets the latter causal effect in terms of the former
-\end{frame}
-
-\imageframe{./lecture_includes/angrist_1990.png}
 
 \begin{frame}{Adding Controls}
-
-We might only think our $Z_i$ is exogenous controlling for some vector $W_i$
-\begin{itemize}
-\item Just add controls to the reduced form and first stage! $\beta^{IV}=\frac{\rho}{\pi}$ for
-\vspace{-0.3cm}
+If $Z_i$ is as-good-as-random only \emph{conditional} on covariates $W_i$,
+add them to both equations:
 \begin{align*}
-Y_i &= \kappa+ \rho Z_i + W_i^\prime\phi +  \nu_i \\
-D_i &= \mu +\pi Z_i + W_i^\prime\psi + \eta_i
+Y_i &= \kappa + \rho Z_i + W_i^\prime\phi  + \nu_i \\
+D_i &= \mu  + \pi Z_i  + W_i^\prime\psi + \eta_i
 \end{align*}
-
-\vspace{-0.2cm}
-with the estimator $\hat\beta^{IV}$ defined analogously \pause{}\medskip
-\item The Frisch-Waugh-Lovell theorem tells us the effective instrument is now $\tilde{Z_i}$: the residuals from regressing $Z_i$ on $W_i$ in the population\pause{}\medskip
-\item E.g. if $W_i$ is a vector of dummies for randomization strata in an RCT, then $\tilde{Z_i}$ captures the within-strata variation in $Z_i$
+\begin{itemize}
+  \item The Frisch-Waugh-Lovell theorem tells us the effective instrument is
+        now $\tilde{Z}_i$: the residuals from regressing $Z_i$ on $W_i$
+  \item If $W_i$ is a set of randomization-strata dummies, $\tilde{Z}_i$
+        captures within-strata variation in $Z_i$
+  \item Key: controls should be chosen on substantive grounds, not to
+        maximize the first-stage F-statistic
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Multiple Treatments}
-
-We might be interested in a multi-dimensional model: $Y_i=X_i^\prime\beta+\varepsilon_i$
+\begin{frame}{Classic Example: Angrist (1990) Vietnam Draft Lottery}
+Angrist (1990, AER) estimated the earnings effect of military service using
+Vietnam-era draft-eligibility as an instrument.
 \begin{itemize}
-\item Instrument vector $Z_i$, with $dim(Z_i)=dim(X_i)$ (``just-identified'')
-\item Population residuals $\tilde{Z}_i$, given some vector of controls $W_i$
-\end{itemize}\medskip\pause{}
-Suppose $Cov(\tilde{Z}_i,\varepsilon_i)=0$. Then, just as before, we have identification:
-\begin{align*}
-Cov(\tilde{Z}_i,Y_i-X_i^\prime\beta)=0 \implies \beta = Cov(\tilde{Z}_i,X_i)^{-1}Cov(\tilde{Z}_i,Y_i)\equiv \beta^{IV},
-\end{align*}
-so long as $Cov(\tilde{Z}_i,X_i)$ is full-rank.\pause{} Equivalently, $\beta^{IV}=\pi^{-1}\rho$ where:
-\vspace{-0.2cm}
-\begin{align*}
-Y_i&=Z_i^\prime\rho + W_i^\prime\phi+\nu_i\\
-X_i&=\pi Z_i+W_i^\prime\psi_i+\eta_i,
-\end{align*}
-
-\vspace{-0.3cm}
-with estimation working just as you'd think
+  \item $Z_i\in\{0,1\}$: randomly assigned draft eligibility (lottery number)
+  \item $D_i\in\{0,1\}$: actual military service
+  \item $Y_i$: later-life earnings
+\end{itemize}
+\medskip
+With binary $Z_i$, the IV estimand simplifies to the \textbf{Wald estimand}:
+\[
+\pictonBlue{\beta^{IV}}
+  = \frac{E[Y_i\mid Z_i=1]-E[Y_i\mid Z_i=0]}
+         {E[D_i\mid Z_i=1]-E[D_i\mid Z_i=0]}
+\]
+\begin{itemize}
+  \item Numerator: earnings effect of draft eligibility (reduced form)
+  \item Denominator: effect of eligibility on actual service probability
+        (first stage)
+  \item Finding: military service reduces early-career earnings by
+        $\approx 15\%$
+\end{itemize}
 \end{frame}
 
-\subsection{Overidentification}
+%=============================================================
+\section{2SLS and Overidentification}
+%=============================================================
 
-\begin{frame}{Multiple Instruments}
-
-What happens when $dim(Z_i)=L>J=dim(X_i)$? \emph{Overidentification}:
-\vspace{-0.2cm}
-\begin{align*}
-Cov(\tilde{Z}_i,Y_i-X_i^\prime\beta)=0 \implies \underbrace{Cov(\tilde{Z}_i,Y_i)}_{L\times 1}=\underbrace{Cov(\tilde{Z}_i,X_i^\prime)}_{L\times J}\underbrace{\beta}_{J\times 1}
-\end{align*}
-\vspace{-0.5cm}
+\begin{frame}{Multiple Instruments: Overidentification}
+When $\dim(Z_i)=L > J=\dim(X_i)$, the system is \emph{overidentified}:
+\[
+Cov(\tilde{Z}_i,Y_i-X_i^\prime\beta)=0
+\;\implies\;
+\underbrace{Cov(\tilde{Z}_i,Y_i)}_{L\times 1}
+=\underbrace{Cov(\tilde{Z}_i,X_i^\prime)}_{L\times J}
+\underbrace{\beta}_{J\times 1}
+\]
 \begin{itemize}
-\item We can drop any $L-J$ instruments to identify $\beta$\pause{}
-\item More generally, we can take any full-rank linear combination $\tilde{Z}_i^*=M\tilde{Z}_i$ for $J\times L$ matrix $M$ such that $Cov(\tilde{Z}_i^*,X_i)$ is invertible
+  \item We have more moment conditions than parameters
+  \item Any full-rank $J\times L$ matrix $M$ gives a valid IV estimator:\\
+        $\beta^{IV}(M)=\bigl(M\,Cov(\tilde{Z}_i,X_i^\prime)\bigr)^{-1}
+        M\,Cov(\tilde{Z}_i,Y_i)$
+  \item Choice of $M$ trades off efficiency vs.\ interpretability
 \end{itemize}
-\vspace{-0.3cm}
-\begin{align*}
-&\underbrace{M\cdot Cov (\tilde{Z}_i,Y_i)}_{Cov(\tilde{Z}_i^*,Y_i)}=\underbrace{M\cdot Cov(\tilde{Z}_i,X_i^\prime)}_{Cov(\tilde{Z}_i^*,X_i^\prime)}\beta\\
-&\implies \beta = \left(M\cdot Cov(\tilde{Z}_i,X_i^\prime)\right)^{-1} M\cdot Cov(\tilde{Z}_i,Y_i)
-\end{align*}\pause{}
-This defines a \emph{class} of IV estimands/estimators, indexed by $M$
 \end{frame}
 
 \begin{frame}{Two-Stage Least Squares (2SLS)}
-
-2SLS sets $M^\prime=\pi$: the matrix of first-stage coefficients
+2SLS chooses $M^\prime=\pi$ (the matrix of first-stage coefficients):
 \begin{itemize}
-\item This makes $\tilde{Z}_i^*=\tilde{Z}_i^\prime\pi$ the (residualized) first-stage fitted values 
-\item Intuitively: combine IVs according to their predictiveness of $X_i$; \\ we should expect this to decrease the IV standard error
-\end{itemize}\bigskip\pause{}
-Since the first-stage from regressing $X_i$ on this $\tilde{Z}_i^*$ is one (by construction), $\beta^{2SLS}$ can be obtained in two \emph{stages}:
+  \item Effective instrument: $\tilde{Z}_i^*=\tilde{Z}_i^\prime\pi$
+        (residualized first-stage fitted values)
+  \item Combine instruments according to their predictive power for $X_i$
+        $\Rightarrow$ minimizes the 2SLS standard error
+\end{itemize}
+\medskip
+\textbf{Two-stage interpretation:}
 \begin{enumerate}
-\item Regress $X_i$ on $Z_i$ and $W_i$ (first stage)
-\item Regress $Y_i$ on first-stage fitted values and $W_i$ (second stage)
-\end{enumerate}\bigskip\pause{}
-Note: here we're talking about the 2SLS \emph{estimand}, but the exact same logic holds for the 2SLS \emph{estimator} (i.e. two stages of OLS)
-\begin{itemize}
-\item That said, you should never run 2SLS by hand. Let \emph{ivreg2} do it!
-\end{itemize}
+  \item \emph{First stage}: regress $X_i$ on $Z_i$ and $W_i$; save fitted values
+        $\hat{X}_i$
+  \item \emph{Second stage}: regress $Y_i$ on $\hat{X}_i$ and $W_i$
+\end{enumerate}
+\begin{alertblock}{Practical warning}
+Never run 2SLS by hand---the second-stage standard errors are wrong.
+Use \texttt{ivreg2} (Stata) or \texttt{AER::ivreg()} / \texttt{fixest::feols()} (R).
+\end{alertblock}
 \end{frame}
 
-\begin{frame}{Angrist-Krueger '91: The Power of Overidentification}
-
-\includegraphics[scale=0.5]{./lecture_includes/ak_table.png}
-
-\end{frame}
-
-\begin{frame}{2SLS is a Many-Splendored Thing}
-
-There is another (I think more useful) way to understand 2SLS: \\ as a weighted average of just-identified IVs:
-\begin{align*}
-\beta^{2SLS}&=\left(\pi^\prime Cov(\tilde{Z}_i,X_i^\prime)\right)^{-1} \pi^\prime Cov(\tilde{Z}_i,Y_i)\\
-&=(\pi^\prime Var(\tilde{Z}_i)\pi)^{-1}\pi^\prime Var(\tilde{Z}_i)\rho,
-\end{align*}
-This is the formula for a $Var(\tilde{Z}_i)$-weighted regression of reduced-form coefficients $\rho$ on first-stage coefficients $\pi$ (with no constant)\pause{}
+\begin{frame}{2SLS as a Weighted Average of Just-Identified IVs}
+When there is a single treatment ($J=1$), 2SLS has an elegant
+weighted-average representation:
+\[
+\beta^{2SLS} = \sum_\ell \omega_\ell\,\beta_\ell^{IV},
+\quad
+\omega_\ell = \frac{\pi_\ell^2 Var(\tilde{Z}_{i\ell})}
+                   {\sum_{\ell^\prime}\pi_{\ell^\prime}^2 Var(\tilde{Z}_{i\ell^\prime})}
+\]
 \begin{itemize}
-\item When $J=1$ (one treatment), this becomes $\beta^{2SLS}=\sum_\ell \omega_\ell \beta_\ell^{IV}$ where $\omega_\ell=(\pi^\prime Var(\tilde{Z}_i)\pi)^{-1}\pi^\prime Var(\tilde{Z}_i)^\prime_\ell\pi_\ell$ and $\beta^{IV}_\ell = \rho_\ell/\pi_\ell$
-\item Intuitively: 2SLS combines multiple ``one-at-a-time'' IVs $\beta_\ell^{IV}$
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Angrist-Hull '23: ``Visual IV'' for Cancer Screening Trials}
-\begin{center}
-\includegraphics[scale=0.5]{./lecture_includes/pragmaticTrials.png}
-\vspace{-0.3cm}
-\end{center}
-Each dot gives a ($\rho_\ell,\pi_\ell$) for a trial $\ell$ where  randomized screening offers $Z_i$ instrument for screening participation $D_i$
-\begin{itemize}
-\item Slope of the weighted line-of-best fit through zero = 2SLS estimate
+  \item $\beta_\ell^{IV}=\rho_\ell/\pi_\ell$ is the just-identified IV estimate
+        using instrument $\ell$ alone
+  \item Weights $\omega_\ell$ are proportional to each instrument's contribution
+        to first-stage variation
+  \item Instruments with stronger first stages receive larger weights
+  \item This ``visual IV'' representation (slope of $\rho_\ell$ on $\pi_\ell$)
+        is also useful for diagnosis
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Overidentification Tests}
-
-Under the constant-effects causal model of $Y_i=X_i^\prime\beta+\varepsilon_i$, overidentification gives a way to test instrument validity
+Under the \emph{constant-effects} model, all just-identified IVs identify the
+same $\beta$:
 \begin{itemize}
-\item All just-identified IVs should coincide: i.e. $\beta_\ell^{IV}=\beta$ for all $\ell$
-\item Graphically: the $R^2$ from visual IV plots should $= 1$ in large samples
-\end{itemize}\medskip\pause{}
-Stata will automatically give you the $p$-value for this test when $L>J$
+  \item If $\beta_\ell^{IV}$ differ significantly across instruments, something
+        is wrong
+  \item The Sargan--Hansen statistic tests $H_0: \beta_\ell^{IV}=\beta$ for
+        all $\ell$; asymptotically $\chi^2(L-J)$ under the null
+\end{itemize}
+\medskip
+\textbf{Cautions:}
 \begin{itemize}
-\item If $p>0.05$, it means your $\hat{\beta}_\ell^{IV}$'s are all pretty similar to each other
-\end{itemize}\medskip\pause{}
-Don't place too much stock in overidentification tests, however:
-\begin{itemize}
-\item They tend to have low power (b/c individual $\hat{\beta}_\ell^{IV}$ tend to be noisy)
-\item If they reject, it need not mean your instruments are invalid \\ (b/c of treatment effect heterogeneity -- more on this in Session 2)
-\item Rejection doesn't tell you which IV is invalid (they all might be!)
+  \item Low power when individual $\hat\beta_\ell^{IV}$ are noisy
+  \item Rejection does \emph{not} tell you which instrument is invalid
+  \item Under \emph{heterogeneous} effects (Session~2), two valid IVs can
+        legitimately have different estimands; the test is not interpretable
+  \item Use the test as one input among many, not as a pass/fail criterion
 \end{itemize}
 \end{frame}
 
-\subsection{Weak vs.\ Many-Weak Bias}
+%=============================================================
+\section{Instrument Strength}
+%=============================================================
 
 \begin{frame}{Weak Instruments}
-\vspace{-0.2cm}
-
-When running just-identified IV, people worry about instrument ``strength'' \vspace{-0.7cm}
+If $\pi$ is small relative to its standard error, the instrument is ``weak'':
 \begin{itemize}
-  \item Specifically the first stage F-statistic, which tests if $\pi=0$ 
+  \item Rule of thumb: first-stage $F<10$ signals potential weakness
+        (Staiger and Stock, 1997)
+  \item \textbf{Bias}: 2SLS is biased toward OLS in small samples;
+        the bias is proportional to $1/F$ approximately
+  \item \textbf{Size distortion}: standard confidence intervals may
+        under-cover in finite samples
 \end{itemize}
-\smallskip\pause
-
-If $\pi$ is small relative to its standard error, we say the IV is ``weak''
+\medskip
+\textbf{Modern guidance (Angrist and Koles\'ar 2022):}
 \begin{itemize}
-  \item Typically use the rule-of-thumb of $F<10$ (Staiger and Stock 1997)
-  \item In this case the second-stage SEs will be large and the 2SLS estimate will tend to be biased towards the corresponding OLS
-\end{itemize}\pause
-
-Much has been made of this over the years, but Angrist and Koles\'{a}r (2022) show that we shouldn't worry too much
-\begin{itemize}
-  \item The SE increase tends to be large enough to ``cover up'' the bias, \\ so you're unlikely to reject the null of $\beta=0$ spuriously 
+  \item In the just-identified case, 2SLS is \emph{median-unbiased}; the
+        SE increase tends to ``cover up'' the bias
+  \item Use \texttt{weakivtest} (Stata; Montiel Olea and Pflueger 2015)
+        for more nuanced critical values
+  \item If $F$ is small: consider Anderson--Rubin or JIVE as robust alternatives
 \end{itemize}
-
 \end{frame}
 
-\begin{frame}{Weak Instruments: Visualized}
+\begin{frame}{Weak Instruments: Monte Carlo}
 \vspace{-0.2cm}
-Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=Var(\varepsilon_i)=Var(\eta_i)=1$
-\begin{center}
-\includegraphics[scale=0.45]{./lecture_includes/strongpi.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Weak Instruments: Visualized}
-\vspace{-0.2cm}
-Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=0.1$ (Weaker)
-\begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/medpi.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Weak Instruments: Visualized}
-\vspace{-0.2cm}
-Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=0.01$ (Very Weak)
-\begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/weakpi.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Many IVs}
-\vspace{-0.2cm}
-A thornier problem is many-weak bias, when overidentified\smallskip
-\begin{itemize}
-\item This also tends to manifest in low first-stage F's, and also causes 2SLS to be biased towards OLS
-\end{itemize}\bigskip\pause{}
-
-Unlike when just-id., however, with many weak IVs the SE's go \emph{down}\smallskip
-\begin{itemize}
-  \item Intuitively, a more flexible FS tends to fit $D_i$ better $\rightarrow$ more power\smallskip
-  \item But we can have \emph{overfitting} with lots of instruments, which essentially recreates the (endogenous) variation in $D_i$ 
-\end{itemize}\bigskip\pause{}
-
-This became a high-profile problem with Angrist-Krueger '91, where the QOB instrument was interacted with many state/year FEs
+$Y_i=0\cdot D_i+\varepsilon_i$, $D_i=\pi Z_i+\eta_i$, $N=100$ replications
+\begin{columns}[t]
+  \column{0.33\textwidth}
+  \centering
+  {\small Strong ($\pi=1$, $F\approx100$)}\\[4pt]
+  \includegraphics[width=\textwidth]{./lecture_includes/strongpi.png}
+  \column{0.33\textwidth}
+  \centering
+  {\small Medium ($\pi=0.1$, $F\approx10$)}\\[4pt]
+  \includegraphics[width=\textwidth]{./lecture_includes/medpi.png}
+  \column{0.33\textwidth}
+  \centering
+  {\small Weak ($\pi=0.01$, $F\approx1$)}\\[4pt]
+  \includegraphics[width=\textwidth]{./lecture_includes/weakpi.png}
+\end{columns}
 \smallskip
+Distribution of $\hat\beta^{IV}$ widens dramatically as the instrument weakens.
+With a very weak instrument, $\hat\beta^{IV}$ converges to $\hat\beta^{OLS}$.
+\end{frame}
+
+\begin{frame}{Many-IV Bias}
+Overidentified 2SLS faces an additional problem when there are many weak instruments:
 \begin{itemize}
-  \item These days folks don't make this mistake ... but many-IV bias can be
-lurking in other settings with constructed instruments (e.g. judge IV)
+  \item \textbf{Symptom}: low first-stage F even though SEs are small (more IVs
+        $\Rightarrow$ richer first stage $\Rightarrow$ better fit of $D_i$)
+  \item \textbf{Mechanism}: overfitting the first stage essentially recreates
+        the endogenous variation in $D_i$, biasing 2SLS toward OLS
+  \item \textbf{Historical case}: Angrist--Krueger (1991) QoB IV interacted with
+        state $\times$ year fixed effects created hundreds of instruments
 \end{itemize}
-
+\medskip
+\textbf{Visualized --- 100 replications:}
+\begin{columns}[t]
+  \column{0.33\textwidth}\centering{\small Few IVs}\\[3pt]
+  \includegraphics[width=\textwidth]{./lecture_includes/fewz.png}
+  \column{0.33\textwidth}\centering{\small 10 IVs}\\[3pt]
+  \includegraphics[width=\textwidth]{./lecture_includes/somez.png}
+  \column{0.33\textwidth}\centering{\small 100 IVs}\\[3pt]
+  \includegraphics[width=\textwidth]{./lecture_includes/manyz.png}
+\end{columns}
 \end{frame}
 
-\begin{frame}{Many Instruments: Visualized}
-\vspace{-0.2cm}
-$Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}+\eta_i$: IV w/ $Z_{i1}$ only
-\begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/fewz.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Many Instruments: Visualized}
-\vspace{-0.2cm}
-$Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}+\eta_i$: IV w/ $Z_{i1},\dots,Z_{i10}$
-\begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/somez.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Many Instruments: Visualized}
-\vspace{-0.2cm}
-$Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}+\eta_i$: IV w/ $Z_{i1},\dots,Z_{i100}$
-\begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/manyz.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{What to Do?}
-\vspace{-0.2cm}
-Aim for few instruments, and check your F's after every \emph{ivreg}\smallskip
+\begin{frame}{Practical Guidance on Instrument Strength}
+\textbf{Prevention:}
 \begin{itemize}
-\item State of the art: Montiel Olea and Pflueger '15; \code{weakivtest} in Stata\smallskip
-\item Staiger-Stock rule-of-thumb ($F>10$) still seems widely held\smallskip
-\item See Lee et al. (2020) and Keane and Neal (2022) for some discussions of additional subtleties
+  \item Prefer parsimonious instrument sets; avoid mechanical many-IV settings
+  \item If using a Bartik/shift-share IV with many industries, the
+        \emph{effective} number of instruments is the number of industries
+        (addressed in Session~2)
 \end{itemize}
-\medskip\pause{}
-
-If your F is small, some things to consider:\smallskip
+\textbf{Diagnosis:}
 \begin{itemize}
-\item Is there a better functional form for your instrument?\smallskip
-\item Do interactions with covariates help? (note: beware many-weak!)\smallskip
-\item Does changing the covariate set help? (note: beware invalidity!)\smallskip
-\item Check results w/a more robust approach (e.g. Anderson-Rubin, JIVE)
+  \item Report first-stage F-statistic (or Kleibergen--Paap for clustered SEs)
+  \item Use \code{weakivtest} in Stata for heteroskedasticity-robust critical values
+  \item See also Lee et al.\ (2020) for $t$-ratio-based inference
 \end{itemize}
-
+\textbf{If the instrument is weak:}
+\begin{itemize}
+  \item Try a more informative functional form for $Z_i$
+  \item Collapse to fewer instruments
+  \item Use Anderson--Rubin confidence sets (valid regardless of strength)
+\end{itemize}
 \end{frame}
 
-\section{Chinese Economic Applications: Session I}
+%=============================================================
+\section{Classic Applications: Top-5 Journal Papers}
+%=============================================================
 
-\begin{frame}{IV Methods in Chinese Economic Research}
-
-China provides rich empirical settings for IV research:\pause
-\begin{itemize}
-  \item Rapid trade liberalization $\rightarrow$ natural experiments in import competition
-  \item Massive infrastructure investment $\rightarrow$ exogenous variation in connectivity
-  \item Historical institutions and policies $\rightarrow$ long-run IV strategies
-  \item Large administrative datasets at province, county, and firm level
-\end{itemize}\medskip\pause
-
-In this section, we examine two landmark papers using IV to study Chinese economic phenomena published in \textbf{top economics journals}:
-
+\begin{frame}{Overview: Two Landmark IV Papers (Post-2010, Top-5 Journals)}
+We study two highly cited papers that use creative IV designs to establish causal relationships:
 \begin{enumerate}
-  \item \textbf{The China Syndrome} (Autor, Dorn, Hanson 2013, \emph{AER}) \\
-  {\small Shift-share IV to study effects of Chinese import competition on US labor markets}
-  \item \textbf{On the Road} (Banerjee, Duflo, Qian 2020, \emph{JPE}) \\
-  {\small Historical railroad plan as IV for infrastructure effects on Chinese economic growth}
+  \item \textbf{Nunn and Qian (2014, \emph{AER})}\\
+        ``US Food Aid and Civil Conflict''\\
+        {\small Uses US wheat production $\times$ historical aid patterns as IV.
+        Context: Africa and developing world.}
+  \medskip
+  \item \textbf{Acemoglu and Restrepo (2020, \emph{JPE})}\\
+        ``Robots and Employment: Evidence from US Commuting Zones''\\
+        {\small Uses Bartik shift-share IV with robot adoption in other countries.
+        Context: US labor markets.}
 \end{enumerate}
-
+\medskip
+Both papers were cited 1{,}000+ times within a decade of publication
+and have had substantial impact on empirical methodology.
 \end{frame}
 
-\begin{frame}{Paper 1: ``The China Syndrome''}
+% ------ Paper 1: Nunn & Qian (2014) ------
+\begin{frame}{Paper~1: Nunn and Qian (2014, \emph{AER})}
+\begin{block}{Citation}
+  Nunn, N.\ and Qian, N.\ (2014).
+  ``US Food Aid and Civil Conflict.''
+  \textit{American Economic Review}, 104(6): 1630--1666.
+  {\small($\approx$1{,}700 Google Scholar citations)}
+\end{block}
 
-{\small
-\textbf{Citation:} Autor, D., Dorn, D., and Hanson, G.H. (2013). ``The China Syndrome: Local Labor Market Effects of Import Competition in the United States.'' \emph{American Economic Review}, 103(6): 2121--2168.
-}\medskip\pause
+\textbf{Research question:} Does US food aid \emph{cause} civil conflict in
+recipient countries?
 
-\textbf{Context:} China's WTO accession (2001) accelerated its integration into world trade. Chinese imports to the US grew from \$100B in 2000 to over \$400B by 2007.\medskip\pause
-
-\textbf{Central Question:} Does rising import competition from China cause adverse labor market outcomes in US commuting zones?
+\medskip
+\textbf{Context \& motivation:}
 \begin{itemize}
-  \item Challenge: Chinese imports may respond to demand conditions in the US that independently affect local employment --- \emph{reverse causality and omitted variable bias}
+  \item The US is the world's largest food-aid donor; annual shipments
+        exceed \$1 billion
+  \item Theoretical ambiguity: aid may reduce conflict by alleviating
+        poverty, or \emph{increase} conflict by providing resources to loot
+        or by strengthening rebel groups
+  \item OLS correlation is unreliable: countries in conflict receive more
+        aid (\emph{reverse causality}); unobserved factors (instability,
+        colonial history) drive both variables (\emph{omitted variable bias})
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Nunn \& Qian (2014): Identification Strategy}
+\textbf{The IV:} Interaction of US wheat production with a country's
+historical propensity to receive US food aid:
+\[
+Z_{it} = \underbrace{\text{USWheat}_{t}}_{\text{supply shock}}
+         \times
+         \underbrace{\bar{P}_i}_{\text{historical aid share}}
+\]
+\begin{itemize}
+  \item $\text{USWheat}_t$: deviations in US wheat production (driven by
+        domestic weather and farm policy, \emph{exogenous} to recipient
+        conditions)
+  \item $\bar{P}_i$: fraction of years country $i$ received US food aid
+        in 1971--1974 (pre-determined baseline capturing structural
+        factors: colonial ties, Cold War alignment, proximity)
+\end{itemize}
+\medskip
+\textbf{Identifying variation:}
+\begin{itemize}
+  \item In bad US harvest years, food-aid flows fall globally
+  \item Countries with higher historical aid propensity experience larger
+        fluctuations---variation that is uncorrelated with their own
+        domestic conditions
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Nunn \& Qian (2014): Data and Specification}
+\textbf{Data:}
+\begin{itemize}
+  \item 125 food-aid recipient countries, annual panel 1971--2006
+  \item \textbf{Outcome}: intra-state conflict onset \& incidence
+        (from PRIO Armed Conflict Dataset)
+  \item \textbf{Treatment}: US food aid shipments (USAID Greenbook)
+  \item \textbf{Instrument}: USDA wheat production $\times$ historical
+        aid share
+  \item \textbf{Controls}: country and year fixed effects; oil prices;
+        US GDP growth; country-specific trends
 \end{itemize}
 
+\medskip
+\textbf{Specification:}
+\[
+\text{Conflict}_{it} = \alpha_i + \mu_t + \beta\,\text{FoodAid}_{it}
+  + \mathbf{W}_{it}^\prime\gamma + \varepsilon_{it}
+\]
+Instrumenting $\text{FoodAid}_{it}$ with $Z_{it}$ via 2SLS.
+
+\medskip
+\textbf{Level of identifying variation:} US wheat production varies
+year-by-year; the interaction creates country-year level variation.
 \end{frame}
 
-\begin{frame}{ADH 2013: IV Strategy (Shift-Share)}
-
-\textbf{The Endogeneity Problem:}
+\begin{frame}{Nunn \& Qian (2014): Results and Robustness}
+\textbf{Key findings:}
 \begin{itemize}
-  \item Commuting zones with weaker manufacturing may both import more from China \emph{and} have declining employment for other reasons
-\end{itemize}\medskip\pause
-
-\textbf{IV Solution --- Shift-Share Instrument:}
-\begin{align*}
-Z_i = \sum_k \underbrace{s_{ik}}_{\text{share}} \times \underbrace{g_k^{OTH}}_{\text{shock}}
-\end{align*}
-\begin{itemize}
-  \item \textbf{Shares} $s_{ik}$: initial (1990) employment share of industry $k$ in CZ $i$
-  \item \textbf{Shocks} $g_k^{OTH}$: growth of Chinese imports in \emph{8 other} high-income countries (Australia, Denmark, Finland, Germany, Japan, New Zealand, Spain, Switzerland)
-\end{itemize}\medskip\pause
-
-\textbf{Identification intuition:} Imports in other countries reflect Chinese productivity growth (the exogenous shock), but not US-specific demand shocks
-
-\end{frame}
-
-\begin{frame}{ADH 2013: Data and Setting}
-
-\textbf{Unit of observation:} 722 US commuting zones (CZs), two periods (1990--2000, 2000--2007)\medskip\pause
-
-\textbf{Outcome variables:}
-\begin{itemize}
-  \item Manufacturing employment share in working-age population
-  \item Wages, hours worked, industry switching
-  \item Unemployment insurance, disability insurance receipt
-\end{itemize}\medskip\pause
-
-\textbf{Data sources:}
-\begin{itemize}
-  \item US Decennial Census and American Community Survey (employment/wages)
-  \item UN Comtrade (bilateral import flows by industry)
-  \item County Business Patterns (establishment-level employment)
-  \item Bureau of Labor Statistics (unemployment and transfer payments)
+  \item A 10\% increase in food-aid deliveries raises the probability of
+        civil conflict onset by $\approx 1.14$ percentage points (large
+        relative to an $\approx 5\%$ base rate)
+  \item Effects are concentrated in countries with weak initial institutions
+        and high ethnic fractionalization
+  \item Stronger effects for food aid that arrives \emph{during} conflict
+        (suggests rebel looting mechanism)
 \end{itemize}
 
-\end{frame}
-
-\begin{frame}{ADH 2013: Original Results}
-
-\begin{center}
-\includegraphics[width=0.85\textwidth]{./lecture_includes/adh_bhj.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{ADH 2013: Refined Results (Borusyak, Hull, Jaravel 2022)}
-
-\begin{center}
-\includegraphics[width=0.85\textwidth]{./lecture_includes/adh_bhj_restud.png}
-\end{center}
-{\small
+\medskip
+\textbf{Robustness and sensitivity:}
 \begin{itemize}
-\item Columns 3--7 include the key $\sum_k s_{ik}\times(\text{period FE})$ control
-\item Standard errors / first-stage F-stats computed via \emph{ssaggregate}
+  \item \emph{Placebo crops}: using soybean or corn production instead of
+        wheat yields near-zero first stages and insignificant reduced
+        forms---these crops are not price-supported and less likely to
+        drive food-aid volumes
+  \item \emph{Alternative instruments}: using only lagged US wheat
+        production (dropping $\bar P_i$ variation) gives similar results
+  \item \emph{Excluding major recipients}: dropping top food-aid
+        recipients (Egypt, Ethiopia) does not change results
+  \item \emph{Heterogeneous trends}: allowing country-specific linear
+        trends leaves findings robust
 \end{itemize}
-}
-
 \end{frame}
 
-\begin{frame}{ADH 2013: Findings and Impact}
-
-\textbf{Main findings:}
+\begin{frame}{Nunn \& Qian (2014): Contribution and IV Lessons}
+\textbf{Academic contributions:}
 \begin{itemize}
-  \item \$1,000 increase in Chinese import exposure per worker $\rightarrow$ $\approx 2$--$2.5\%$ decline in the manufacturing employment share in commuting zones\pause
-  \item Estimated 2--2.4 million manufacturing jobs lost in 1990--2007 due to Chinese import competition\pause
-  \item Significant effects on wages, disability insurance, and income transfers
-  \item Effects persist over a decade --- labor markets adjust slowly
-\end{itemize}\medskip\pause
-
-\textbf{Why it matters for IV methods:}
-\begin{itemize}
-  \item Introduced and popularized the \textbf{shift-share IV} design in economics
-  \item Borusyak, Hull, and Jaravel (2022) provide formal conditions for validity: key is exogeneity of \emph{shocks} ($g_k$), not shares
-  \item Generated a large literature on SSIV refinements and diagnostics
+  \item First large-$N$ causal evidence that food aid can increase, not
+        decrease, conflict---a ``boomerang effect''
+  \item Shapes the debate on aid effectiveness (Easterly vs.\ Sachs)
+        and humanitarian intervention design
+  \item Demonstrates that agricultural commodity shocks in donor
+        countries can serve as valid instruments for aid flows
 \end{itemize}
 
+\medskip
+\textbf{IV methodology lessons:}
+\begin{itemize}
+  \item The \textbf{interaction instrument} $Z_{it}=\text{Shock}_t\times
+        \text{Exposure}_i$ is a workhorse design in development economics
+  \item Validity rests on the \emph{supply} side (US weather/farm policy
+        unrelated to conflict in recipient countries)
+  \item The inclusion of country FE absorbs time-invariant confounders
+        correlated with $\bar P_i$; year FE absorbs global shocks
+  \item Always test first stage separately by sub-groups and with
+        alternative instrument definitions
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Paper 2: ``On the Road''}
+% ------ Paper 2: Acemoglu & Restrepo (2020) ------
+\begin{frame}{Paper~2: Acemoglu and Restrepo (2020, \emph{JPE})}
+\begin{block}{Citation}
+  Acemoglu, D.\ and Restrepo, P.\ (2020).
+  ``Robots and Employment: Evidence from US Commuting Zones, 1990--2007.''
+  \textit{Journal of Political Economy}, 128(6): 2188--2244.
+  {\small($\approx$1{,}800 Google Scholar citations)}
+\end{block}
 
-{\small
-\textbf{Citation:} Banerjee, A., Duflo, E., and Qian, N. (2020). ``On the Road: Access to Transportation Infrastructure and Economic Growth in China.'' \emph{Journal of Political Economy}, 128(8): 2967--3001.
-}\medskip\pause
+\textbf{Research question:} What is the causal effect of industrial robot
+adoption on local labor markets?
 
-\textbf{Context:} China built one of the world's most extensive road and railroad networks during the 1990s--2000s. By 2010, China had the world's second-largest highway network.\medskip\pause
-
-\textbf{Central Question:} Does access to transportation infrastructure (national highways and railroads) cause economic growth in Chinese counties?
+\medskip
+\textbf{Context \& motivation:}
 \begin{itemize}
-  \item Challenge: roads are built to serve economically active areas $\rightarrow$ strong \emph{reverse causality}: wealthier counties attract more infrastructure
-  \item OLS estimates would be biased upward
+  \item Industrial robot density rose sharply in Europe and the US from
+        the 1990s---particularly in automotive, electronics, and metals
+  \item Economic theory predicts robots displace routine tasks but may
+        create complementary jobs elsewhere
+  \item OLS is biased: industries undergoing productivity shocks may
+        adopt robots \emph{and} have other trends in wages/employment
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Acemoglu \& Restrepo (2020): Shift-Share IV Design}
+\textbf{The instrument:} Robot adoption in other high-income countries
+``translated'' to US commuting zones via pre-period industry shares:
+\[
+Z_i = \sum_k \underbrace{l_{ik,1990}}_{\text{share}}
+             \times
+             \underbrace{\Delta\text{Robots}_{k,\text{OtherCountries}}}_{\text{shock}}
+\]
+\begin{itemize}
+  \item \textbf{Shocks}: growth in robots per worker in industry $k$
+        across Europe (France, Germany, Italy, Finland, Sweden, etc.)
+  \item \textbf{Shares}: CZ $i$'s employment share in industry $k$ as
+        of 1990 (pre-determined)
+\end{itemize}
+\medskip
+\textbf{Validity argument (parallel to ADH 2013):}
+\begin{itemize}
+  \item Robot adoption in European industries reflects global technology
+        improvements, not US local demand conditions
+  \item Pre-period shares capture industrial composition that predates
+        the robot wave---plausibly uncorrelated with contemporaneous
+        US labor demand shocks
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Acemoglu \& Restrepo (2020): Data and Specification}
+\textbf{Data:}
+\begin{itemize}
+  \item 722 US commuting zones (CZs), two periods: 1990--2007
+  \item \textbf{Treatment}: robots per 1{,}000 workers in each CZ
+        (constructed from IFR data mapped to CZ industries)
+  \item \textbf{Outcomes}: employment-to-population ratio; log wages;
+        share in manufacturing; hours worked
+  \item \textbf{Instrument}: exposure to foreign robot adoption via Bartik construction above
+  \item \textbf{Controls}: demographics, routine task intensity, CZ
+        fixed effects, census division fixed effects
 \end{itemize}
 
+\medskip
+\textbf{Specification:}
+\[
+\Delta Y_i = \alpha + \beta\,\Delta\text{Robots}_i
+           + X_i^\prime\gamma + \varepsilon_i
+\]
+Instrumenting $\Delta\text{Robots}_i$ with $Z_i$ via 2SLS across two
+long differences (1990--2000, 2000--2007).
 \end{frame}
 
-\begin{frame}{BDQ 2020: IV Strategy}
-
-\textbf{Identification challenge:} Infrastructure placement is endogenous --- roads go where economic activity is or is expected to be.\medskip\pause
-
-\textbf{IV Approach --- Historical Planned Network:}
+\begin{frame}{Acemoglu \& Restrepo (2020): Results and Robustness}
+\textbf{Key findings:}
 \begin{itemize}
-  \item Key idea: use the \textbf{straight-line distance} between county seats and the pre-existing (pre-reform era) trunk transportation network as an instrument
-  \item The historical network layout was driven by \textbf{political and military} considerations, not economic development potential of specific localities
-\end{itemize}\medskip\pause
-
-\textbf{Instrument construction:}
-\begin{enumerate}
-  \item Identify major city pairs linked in the 1962 railroad plan
-  \item Draw straight lines between them --- counties near these lines are more likely to receive highways/railroads later
-  \item Closeness to historical straight-line routes $\perp$ current economic potential, conditional on baseline controls
-\end{enumerate}
-
-\end{frame}
-
-\begin{frame}{BDQ 2020: Data and Methodology}
-
-\textbf{Unit of observation:} 2,872 Chinese counties, 1986--2003\medskip\pause
-
-\textbf{Outcome variables:}
-\begin{itemize}
-  \item Real GDP growth at the county level
-  \item Industrial output, investment
-  \item Nighttime light intensity (satellite proxy for economic activity)
-\end{itemize}\medskip\pause
-
-\textbf{Data sources:}
-\begin{itemize}
-  \item National Bureau of Statistics: county-level GDP and industrial output
-  \item Ministry of Transportation: national highway and railroad GIS data
-  \item Historical transport plan documents (1962 state-level railroad plan)
-  \item County population census data for baseline controls
-\end{itemize}\medskip\pause
-
-\textbf{Specification:} Panel IV regression with county and year fixed effects, instrumenting actual access with proximity to historically planned lines
-
-\end{frame}
-
-\begin{frame}{BDQ 2020: Key Results and Lessons}
-
-\textbf{Main findings:}
-\begin{itemize}
-  \item Proximity to a national highway increases GDP growth significantly
-  \item Being within 10km of a highway $\rightarrow$ roughly 10--15\% higher annual GDP growth during the construction period\pause
-  \item Effects are concentrated in manufacturing and trade-related sectors
-  \item Counties with initially weaker connectivity benefit more from access
-\end{itemize}\medskip\pause
-
-\textbf{Why it matters for IV methods:}
-\begin{itemize}
-  \item Illustrates the ``\textbf{historical plan as instrument}'' strategy --- a common approach in development economics
-  \item Distinguishes between actual placement (endogenous) and historically planned routes (exogenous to current economic conditions)
-  \item Similar to Duranton and Turner (2011, AER) for US highways
-\end{itemize}\medskip\pause
-
-\textbf{Note:} Session 2 covers a related method --- \emph{Recentered IV} (Borusyak and Hull 2023) --- with China's High-Speed Rail as an illustration
-
-\end{frame}
-
-\begin{frame}{BDQ 2020: Heterogeneous Effects and Mechanisms}
-
-\textbf{Heterogeneous effects:}\pause
-\begin{itemize}
-  \item Effects are \emph{larger} for counties that are initially more isolated (higher baseline travel costs)
-  \item Effects are \emph{larger} for counties near the main infrastructure corridors (market access externalities)
-\end{itemize}\medskip\pause
-
-\textbf{Mechanisms:}
-\begin{itemize}
-  \item Reduced trade costs $\rightarrow$ easier access to input and output markets
-  \item Increased firm entry and investment in newly connected counties
-  \item Labor market integration: workers move toward opportunities
-\end{itemize}\medskip\pause
-
-\textbf{Validity checks:}
-\begin{itemize}
-  \item Placebo test: straight-line connections between \emph{non-major} cities do not predict economic outcomes
-  \item Balance: counties near planned lines are not systematically different in pre-period trends
-  \item First stage: strong first stage F-statistics across all specifications
+  \item One additional robot per 1{,}000 workers $\Rightarrow$ employment
+        ratio falls by 0.18--0.34 pp and wages by 0.25--0.5\%
+  \item Roughly 400{,}000--670{,}000 jobs displaced by robots over
+        1990--2007
+  \item Effects concentrated in manufacturing; no significant offsetting
+        job creation in other sectors
+  \item Larger effects for lower-skill, routine-task workers
 \end{itemize}
 
+\medskip
+\textbf{Robustness and sensitivity:}
+\begin{itemize}
+  \item \emph{Pre-trend test}: robot exposure does not predict 1970--1990
+        employment trends (no pre-existing differences)
+  \item \emph{Alternative shares}: using 1970 industry shares (farther
+        from the robot wave) gives similar results
+  \item \emph{Excluding auto-heavy CZs}: dropping the Midwest
+        automotive belt does not materially change estimates
+  \item \emph{China competition control}: conditioning on ADH-style
+        Chinese import competition exposure leaves robot effects intact
+  \item \emph{Clustering}: results robust to CZ, state, and
+        industry clustering
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Acemoglu \& Restrepo (2020): Contribution and IV Lessons}
+\textbf{Academic contributions:}
+\begin{itemize}
+  \item Provides first rigorous causal evidence that robots reduce employment
+        and wages---fueling the automation-inequality debate
+  \item Methodologically pairs theory (task-based model) with credible
+        causal identification
+  \item Spawned a large literature on technology, automation, and
+        labor market polarization
+\end{itemize}
+
+\medskip
+\textbf{IV methodology lessons:}
+\begin{itemize}
+  \item The \textbf{Bartik shift-share} design (industry shares $\times$
+        global shocks) is now a standard tool in regional economics---see
+        also Borusyak, Hull, Jaravel (2022) for formal conditions
+  \item Foreign-country shocks are a natural exogeneity source when
+        domestic conditions are confounded
+  \item Pre-trend and placebo tests are essential for validating
+        the parallel-trends implicit in share-based instruments
+  \item SSIV formal theory and China HSR illustration are covered in
+        Session~2
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Comparing the Two Papers}
-
 \begin{center}
+\small
 \begin{tabular}{lll}
-\hline
- & \textbf{ADH (2013)} & \textbf{BDQ (2020)} \\
-\hline
+\toprule
+ & \textbf{Nunn \& Qian (2014)} & \textbf{Acemoglu \& Restrepo (2020)} \\
+\midrule
 Journal & AER & JPE \\
-Setting & US CZs / China trade & Chinese counties \\
-Treatment & Chinese import competition & Road/rail access \\
-IV type & Shift-share & Historical plan \\
-Exog. source & Imports in other countries & 1962 military plan \\
-Unit & CZ $\times$ period & County $\times$ year \\
-Key finding & Trade $\downarrow$ manufacturing & Infrastructure $\uparrow$ GDP \\
-\hline
+Setting & Developing countries (Africa) & US commuting zones \\
+Treatment & US food aid flows & Robot adoption rate \\
+IV type & Interaction (shock $\times$ exposure) & Bartik shift-share \\
+Exog.\ source & US wheat production & Foreign robot adoption \\
+Unit & Country $\times$ year & CZ $\times$ period \\
+Key finding & Aid $\uparrow$ conflict & Robots $\downarrow$ employment \& wages \\
+Citations & $\approx$1{,}700 & $\approx$1{,}800 \\
+\bottomrule
 \end{tabular}
-\end{center}\medskip\pause
-
-\textbf{Common thread:} Both papers use a \textbf{``double-level''} IV logic: exogenous variation exists at a higher/different level (industries/planned routes), which is ``translated'' down to the unit of interest via a known formula
-
+\end{center}
+\medskip
+\textbf{Common thread:} Both exploit variation from a \emph{different} level
+(global supply shocks; foreign industry adoption) that is plausibly exogenous
+to the unit of interest (recipient country; US commuting zone).
 \end{frame}
 
-\section{Conclusions}
+%=============================================================
+\section{Summary}
+%=============================================================
 
 \begin{frame}{Session 1 Summary}
-
-\textbf{IV Mechanics:}
+\textbf{IV Foundations:}
 \begin{itemize}
-  \item IV identification: $\beta^{IV} = \rho / \pi$ (reduced form over first stage)
-  \item 2SLS with multiple instruments: efficiency-weighted combination
-  \item Overidentification tests: valid under constant effects, interpret carefully
-  \item Weak and many-IV bias: aim for $F > 10$ in first stage
-\end{itemize}\medskip\pause
-
-\textbf{Chinese Economics Applications:}
-\begin{itemize}
-  \item ADH (2013): Shift-share IV reveals large labor market costs of China trade shock
-  \item BDQ (2020): Historical plan IV reveals positive infrastructure effects in China
-  \item Both papers exemplify design-based causal inference with creative instruments
+  \item IV validity requires relevance, independence, and exclusion
+  \item $\beta^{IV}=\rho/\pi$ (reduced form $\div$ first stage)
+  \item With controls: effective instrument $\tilde Z_i$ = residual of
+        $Z_i$ on $W_i$ (Frisch--Waugh)
 \end{itemize}
 
+\medskip
+\textbf{2SLS and Overidentification:}
+\begin{itemize}
+  \item 2SLS = efficiency-optimal combination of multiple instruments
+  \item 2SLS = weighted average of just-identified IVs
+  \item Sargan--Hansen test: diagnostic, not a ``certification of validity''
+\end{itemize}
+
+\medskip
+\textbf{Instrument Strength:}
+\begin{itemize}
+  \item $F>10$ rule of thumb; \texttt{weakivtest} for robust critical values
+  \item Many-IV bias: overfitting first stage recreates endogeneity
+\end{itemize}
+
+\medskip
+\textbf{Applications (Top-5, Post-2010):}
+\begin{itemize}
+  \item Nunn \& Qian (2014, AER): food aid $\Rightarrow$ conflict using
+        interaction IV
+  \item Acemoglu \& Restrepo (2020, JPE): robots $\Rightarrow$ employment
+        loss using Bartik IV
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Preview: Session 2}
-
-In Session 2, we will cover:\medskip
-
 \begin{enumerate}
-  \item \textbf{IV Interpretation}
+  \item \textbf{IV Interpretation (LATE)}
   \begin{itemize}
-    \item What does IV identify? The Local Average Treatment Effect (LATE)
-    \item Imbens-Angrist (1994): monotonicity and complier analysis
-    \item Diff-in-diff and IV: connections and extensions
-  \end{itemize}\medskip
+    \item Imbens--Angrist (1994) assumptions: monotonicity, compliers
+    \item Characterizing compliers; diff-in-diff IV
+  \end{itemize}
+  \medskip
   \item \textbf{Formula Instruments}
   \begin{itemize}
-    \item Shift-share IV: formal conditions and implementation
-    \item Recentered IV: beyond shift-share (Borusyak-Hull 2023)
-    \item China's High-Speed Rail as a running illustration
-  \end{itemize}\medskip
-  \item \textbf{Chinese Applications: Session II}
+    \item Shift-share IV: formal conditions (Borusyak et al.\ 2022)
+    \item Recentered IV: beyond shift-share (Borusyak and Hull 2023)
+    \item Illustration: China High-Speed Rail market access
+  \end{itemize}
+  \medskip
+  \item \textbf{IV with Chinese Economic Context}
   \begin{itemize}
-    \item Meng, Qian, Yared (2015, ReStud): Causes of China's Great Famine
+    \item Meng, Qian, Yared (2015, \emph{ReStud}): Great Famine IV
+    \item Khandelwal, Schott, Wei (2013, \emph{QJE}): WTO quota removal
   \end{itemize}
 \end{enumerate}
-
 \end{frame}
 
-\begin{frame}{Keep Calm and \code{ivreg2} On!}
-
+\begin{frame}[plain]
 \begin{center}
-Thank you for your attention!
-
-\bigskip
-\textbf{Jingxuan Du} \\
-Dongbei University of Finance and Economics \\
-\smallskip
-\url{dujingxuan6@dufe.edu.cn}
-
-\bigskip
-{\small Session 2 continues after a short break.}
+\vspace{1cm}
+{\large\color{dufenavy}\textbf{Instrumental Variables --- Session 1}}\\[8pt]
+\rule{0.6\textwidth}{0.5pt}\\[10pt]
+\textbf{Jingxuan Du}\\[4pt]
+Dongbei University of Finance and Economics (DUFE)\\[6pt]
+\texttt{dujingxuan6@dufe.edu.cn}\\[12pt]
+{\color{dufegray}\small Questions welcome via email.\\
+Session 2 slides cover IV interpretation and Chinese applications.}
 \end{center}
 \end{frame}
 

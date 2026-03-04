@@ -1,773 +1,862 @@
 \documentclass{beamer}
-
-\input{preamble.tex}
+\input{preamble_dufe.tex}
 
 \title{Instrumental Variables}
-\subtitle{Session 2: Interpretation, Formula Instruments, and Applications}
-\author{Jingxuan Du \\ \smallskip {\small Dongbei University of Finance and Economics (DUFE)} \\ \smallskip {\small \href{mailto:dujingxuan6@dufe.edu.cn}{dujingxuan6@dufe.edu.cn}}}
+\subtitle{Session~2: Interpretation, Formula Instruments, and Applications}
+\author[Jingxuan Du]{Jingxuan Du\\[4pt]
+  {\small Dongbei University of Finance and Economics (DUFE)}\\[2pt]
+  {\small\texttt{dujingxuan6@dufe.edu.cn}}}
 \date{Empirical Methods for PhD Students}
 
 \begin{document}
 
-\imageframe{./lecture_includes/cover_frontiers.png}
-
-\section{Introductions}
-
-\begin{frame}{Session 2: Overview}
-
-\textbf{Welcome back!} In Session 1, we covered:
-\begin{itemize}
-  \item IV mechanics: just-identified IV, 2SLS, weak instruments
-  \item Applications: ADH (2013) China Syndrome and BDQ (2020) China roads
-\end{itemize}\medskip\pause
-
-\textbf{Session 2 agenda:}
-\begin{enumerate}
-  \item \textbf{IV Interpretation:} What does IV \emph{really} identify?
-  \begin{itemize}
-    \item LATE, compliers, treatment effect heterogeneity
-    \item Connections to diff-in-diff
-  \end{itemize}
-  \item \textbf{Formula Instruments:} Shift-share and recentered IV
-  \begin{itemize}
-    \item Formal conditions, implementation, China HSR illustration
-  \end{itemize}
-  \item \textbf{Chinese Economics Applications: Session II}
-  \begin{itemize}
-    \item Meng, Qian, Yared (2015, ReStud): Causes of China's Great Famine
-  \end{itemize}
-\end{enumerate}
-
+\begin{frame}
+  \titlepage
 \end{frame}
 
-\begin{frame}{Review: Key Takeaways from Session 1}
-
-Three IV estimands/estimators to know:\medskip
-\begin{itemize}
-  \item \bgVioletRed{Just-identified IV} $= \rho/\pi$: reduced form over first stage
-  \item \bgPictonBlue{2SLS}: optimal combination of multiple instruments; avoids many-IV bias if few instruments used
-  \item \bgSun{Wald estimand}: for binary $Z$, $= E[Y|Z=1]-E[Y|Z=0]$ over $E[D|Z=1]-E[D|Z=0]$
-\end{itemize}\medskip\pause
-
-Two papers illustrated the ``double-level'' logic for instrument validity:
-\begin{itemize}
-  \item \textbf{ADH (2013)}: Chinese import shocks in other countries $\rightarrow$ shift-share IV
-  \item \textbf{BDQ (2020)}: 1962 historical plan $\rightarrow$ straight-line IV for Chinese roads
-\end{itemize}\medskip\pause
-
-A key question we did \emph{not} answer: under what conditions does $\beta^{IV}$ have a \textbf{causal interpretation}? $\rightarrow$ That's our first topic today
-
+\begin{frame}{Session 2 Roadmap}
+\tableofcontents
 \end{frame}
 
-\section{IV Interpretation}
+%=============================================================
+\section{IV Interpretation: The Local Average Treatment Effect}
+%=============================================================
 
-\subsection{LATE and Generalizations}
+\begin{frame}{What Does IV Actually Identify?}
+Session~1 derived the IV estimand under constant effects:
+$Y_i=\violetRed{\beta}D_i+\varepsilon_i$.
 
-\begin{frame}{What Does IV Identify, Really?}
-
-IV was invented in the context of structural economic models, typically with a single parameter $\beta$ linearly relating $Y_i$ to $X_i$ 
+\medskip
+In reality, treatment effects are \textbf{heterogeneous}: $\violetRed{\beta_i}$
+varies across individuals.
 \begin{itemize}
-\item These days we understand $Y_i=\beta X_i+\varepsilon_i$ as describing a \emph{causal} relationship, imposing a (strong) constant-effects restriction
-\end{itemize} \pause{}\medskip
+  \item IV was invented for structural models with a single parameter;
+        heterogeneity changes the interpretation fundamentally
+  \item Imbens and Angrist (1994, \emph{Econometrica}) showed that IV
+        identifies a particular weighted average of heterogeneous effects:
+        the \textbf{Local Average Treatment Effect (LATE)}
+  \item Key tools: potential outcomes framework + monotonicity assumption
+\end{itemize}
 
-The Imbens-Angrist LATE result revolutionized our understanding of IV estimands, and clarified some subtle points around IV identification
+\medskip
+\textbf{Key distinction:}
 \begin{itemize}
-\item $\beta^{IV}$ often identifies a convex average of heterogeneous effects under first-stage \emph{monotonicity}: $Z_i$ only affects $X_i$ in one direction
-\item IV ``exogeneity'' can arise from two conceptually different assumptions of instrument \emph{independence} and \emph{exclusion}
+  \item \emph{Internal validity}: Does IV identify \emph{a} causal effect?
+        (Yes, under IA assumptions)
+  \item \emph{External validity}: Is the LATE the policy-relevant parameter?
+        (Depends on who the compliers are)
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Basic (Binary Treatment, Binary Instrument) Setup}
-Let $Y_i(0)$ and $Y_i(1)$ denote individual $i$'s potential outcomes given a binary treatment $D_i\in\{0,1\}$\smallskip
+\begin{frame}{Potential Outcomes Setup}
+Let $Y_i(d)$ be $i$'s outcome under treatment status $d\in\{0,1\}$:
 \begin{itemize}
-\item Observed outcomes: $Y_i=\left(Y_i(1)-Y_i(0)\right)D_i+Y_i(0)\pause{}\equiv\beta_i D_i+\varepsilon_i$
-\end{itemize}\medskip\pause{}
-Let $D_i(0)$ and $D_i(1)$ denote individual $i$'s potential treatment given a binary instrument $Z_i\in\{0,1\}$\smallskip
+  \item Observed outcome: $Y_i = Y_i(D_i) = Y_i(1)D_i + Y_i(0)(1-D_i)$
+  \item Treatment effect: $\beta_i = Y_i(1)-Y_i(0)$ (individual-specific)
+\end{itemize}
+
+\medskip
+Let $D_i(z)$ be $i$'s treatment status under instrument value $z\in\{0,1\}$:
 \begin{itemize}
-\item Observed treatment: $D_i=\left(D_i(1)-D_i(0)\right)Z_i+D_i(0)$
-\end{itemize}\medskip\pause{}
-Under what assumptions can we causally interpret \code{ivreg2 Y (D=Z)}?
+  \item Observed treatment: $D_i = D_i(Z_i)$
+\end{itemize}
+
+\medskip
+The four \textbf{compliance types} based on $(D_i(0),D_i(1))$:
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+Type & $D_i(0)$ & $D_i(1)$ \\
+\midrule
+Always-taker  & 1 & 1 \\
+Complier      & 0 & 1 \\
+Never-taker   & 0 & 0 \\
+Defier        & 1 & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
 \end{frame}
 
 \begin{frame}{Imbens and Angrist (1994) Assumptions}
 \begin{enumerate}
-\item \emph{As-good-as-random assignment}: $Z_i\perp (Y_i(0),Y_i(1),D_i(0),D_i(1))$\smallskip
-\begin{itemize}
-\item Consider the Angrist draft lottery, or Angrist-Krueger's QoB IV
-\end{itemize}\medskip\pause{}
-\item \emph{Exclusion}: $Z_i$ only affects $Y_i$ through its effect on $D_i$\smallskip
-\begin{itemize}
-\item Implicit in the potential outcome notation: $Y_i(d)$ is not indexed by $Z_i$
-\end{itemize}\medskip\pause{}
-\item \emph{Relevance}: $Z_i$ is correlated with $D_i$\smallskip
-\begin{itemize}
-\item Equivalently, given Assumption 1, $E[D_{i}(1)-D_i(0)]\neq 0$
-\end{itemize}\medskip\pause{}
-\item \emph{Monotonicity}: $D_{i}(1)\ge D_{i}(0)$ for all $i$ (i.e., almost-surely)\smallskip
-\begin{itemize}
-\item The instrument can only shift the treatment in one direction
-\end{itemize}
+  \item \textbf{Independence (as-good-as-random):}
+        $Z_i \perp (Y_i(0),Y_i(1),D_i(0),D_i(1))$
+        \begin{itemize}
+          \item Instrument is randomly assigned (or conditionally so)
+        \end{itemize}
+  \medskip
+  \item \textbf{Exclusion:}
+        $Z_i$ affects $Y_i$ only through $D_i$ (i.e.\ $Y_i(d,z)=Y_i(d)$)
+        \begin{itemize}
+          \item No direct effect of the instrument on the outcome
+        \end{itemize}
+  \medskip
+  \item \textbf{Relevance:}
+        $\Pr(D_i(1)\ne D_i(0)) > 0$
+        \begin{itemize}
+          \item The instrument moves at least some individuals' treatment
+        \end{itemize}
+  \medskip
+  \item \textbf{Monotonicity:}
+        $D_i(1)\ge D_i(0)$ for all $i$
+        \begin{itemize}
+          \item The instrument shifts treatment in one direction only
+          \item Equivalently: no defiers
+        \end{itemize}
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{Local Average Treatment Effect (LATE) Identification}
-Imbens and Angrist showed that under these assumptions:
-\begin{align*}
-\beta^{IV}=E[Y_i(1)-Y_i(0)\mid D_i(1)>D_i(0)]
-\end{align*}
-\vspace{-0.6cm}
+\begin{frame}{The LATE Theorem}
+\textbf{Theorem (Imbens and Angrist 1994):} Under the four IA assumptions,
+\[
+\pictonBlue{\beta^{IV}}
+  = E[Y_i(1)-Y_i(0)\mid \underbrace{D_i(1)>D_i(0)}_{\text{compliers}}]
+  \equiv \text{LATE}
+\]
 
-The IV estimand $\beta^{IV}$ identifies a LATE: the average treatment effect $Y_i(1)-Y_i(0)$ among \emph{compliers}: those with $1=D_i(1)>D_i(0)=0$\smallskip\pause{}
+\textbf{Interpretation:}
 \begin{itemize}
-\item Intuitively, IV can't tell us anything about the treatment effects of \emph{never-takers} $D_i(1)=D_i(0)=0$ or \emph{always-takers} $D_i(1)=D_i(0)=1$\smallskip\pause{}
-\item Monotonicity rules out the presence of \emph{defiers}, with $D_i(1)<D_i(0)$
+  \item IV identifies the average treatment effect \emph{only among
+        compliers} --- those who switch treatment status because of the
+        instrument
+  \item \emph{Never-takers}: IV tells us nothing (they never take treatment)
+  \item \emph{Always-takers}: IV tells us nothing (they always take treatment)
+  \item \emph{Defiers}: ruled out by monotonicity
+\end{itemize}
+
+\medskip
+\textbf{Practical implication:} The ``right'' IV depends on who the
+compliers are and whether their LATE is close to the effect of interest.
+\end{frame}
+
+\begin{frame}{Monotonicity: When Is It Plausible?}
+\textbf{Plausible settings:}
+\begin{itemize}
+  \item Draft lottery: being lottery-eligible can only \emph{increase}
+        military service (no one serves \emph{because} they lost)
+  \item Randomized encouragement: the nudge can only push toward treatment
+  \item Geographic instruments (e.g.\ distance): being closer increases
+        exposure probability monotonically
+\end{itemize}
+
+\medskip
+\textbf{More questionable settings:}
+\begin{itemize}
+  \item Judge leniency IV: judges respond heterogeneously across case types;
+        a strict judge on drug cases may be lenient on property crimes
+  \item Multiple dimensions of treatment: if $D_i$ is multidimensional,
+        monotonicity is a vector condition and hard to verify
+\end{itemize}
+
+\medskip
+\textbf{Note:} Under \emph{constant} effects, monotonicity is not needed;
+$\beta^{IV}=\beta$ regardless of compliance type.
+\end{frame}
+
+\begin{frame}{Characterizing Compliers: Observable Characteristics}
+Although we never observe whether $i$ is a complier (we see only one
+of $D_i(0), D_i(1)$), we can recover complier means of observables.
+
+\medskip
+\textbf{Abadie (2003) ``kappa-weighting'' trick:}
+
+For any pre-determined covariate $X_i$ (not affected by $D_i$):
+\[
+E[X_i\mid D_i(1)>D_i(0)]
+  = \frac{E\bigl[\kappa_i\,X_i\bigr]}{E[\kappa_i]},
+\quad
+\kappa_i = 1 - \frac{D_i(1-Z_i)}{1-P(Z_i)}-\frac{(1-D_i)Z_i}{P(Z_i)}
+\]
+
+\textbf{Simpler shortcut:} IV'ing $X_i D_i$ on $D_i$ (using $Z_i$) identifies
+$E[X_i\mid D_i(1)>D_i(0)]$.
+
+\medskip
+\textbf{Why it matters:}
+\begin{itemize}
+  \item Comparing complier means to the population mean reveals who the
+        LATE applies to (internal vs.\ external validity)
+  \item If compliers are younger, lower-income, or less educated, the
+        LATE may not generalize to the full population
 \end{itemize}
 \end{frame}
 
-\imageframe{./lecture_includes/angrist_1990.png}
+\begin{frame}{Generalizations of LATE}
+\textbf{Multivalued treatments:}
+\begin{itemize}
+  \item When $D_i\in\{0,1,\ldots,K\}$, IV identifies a weighted average
+        of incremental effects $E[Y_i(k)-Y_i(k-1)\mid\text{compliers at margin }k]$
+  \item Weights are proportional to how much the instrument shifts the
+        treatment at each margin
+\end{itemize}
 
-\begin{frame}{What Does This Mean \emph{Practically}?} 
-Two conceptually distinct considerations: \emph{internal} vs. \emph{external} validity\smallskip
+\medskip
+\textbf{Multiple instruments:}
 \begin{itemize}
-\item Context of an IV, and who the compliers likely are, may matter\smallskip
-\item Usual ``overidentification'' test logic fails: two valid IVs may have different estimands
-\end{itemize}\medskip\pause{}
-In addition to as-good-as-random assignment / exclusion, we may need to worry about monotonicity when we do IV\smallskip
-\begin{itemize}
-\item Sensible in many settings (e.g. draft lottery / cancer screening RCTs) \smallskip
-\item Maybe questionable in judge IVs (compliers defined by being assigned to a lenient vs. strict judge)
-\end{itemize}\medskip\pause{}
+  \item When valid IVs have different complier populations, 2SLS is a
+        weighted average of different LATEs---the weights may not all be
+        positive
+  \item Overidentification tests can \emph{reject} not because instruments
+        are invalid, but because they have different compliers
+\end{itemize}
 
-Note: technically, we don't need monotonicity if effects are homogenous
-\end{frame}
-
-\begin{frame}{Generalizations and Limitations}
-
-\vspace{-0.2cm}
-The core logic of IA'94 extends to multivalued treatments/instruments
+\medskip
+\textbf{IV with controls:}
 \begin{itemize}
-\item IV identifies an avg. of incremental treatment effects, putting more weight on margins where the instrument shifts the treatment more
-\item Regressions of $\mathbf{1}[X_i\ge x]$ on $Z_i$ identify the weights
-\end{itemize}\medskip\pause{}
-The result does \emph{not} easily extend, however, to multiple treatments 
-\begin{itemize}
-\item Contamination bias: IV coefficient on $X_{ij}$ generally incorporates effects from other treatments $X_{ik}$, $k\neq j$ 
-\end{itemize}\medskip\pause{}
-Since 2SLS is a weighted average of ``one-at-a-time'' IVs, overidentified single-treatment specifications can have a LATE interpretation
-\begin{itemize}
-\item Need all individual IVs to have a LATE interpretation and the 2SLS weights to be convex (the latter can be checked empirically)
+  \item If independence holds conditionally on $W_i$, IV with cell FEs
+        identifies a weighted average of within-cell LATEs
+  \item Key condition: $E[Z_i\mid W_i]$ must be linear in $W_i$; use
+        saturated controls where possible
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Generalizations and Limitations (Cont.)}
-
-We can also have a LATE interpretation in IV specifications w/controls
-\begin{itemize}
-\item E.g. if $Z_i$ is only as-good-as-randomly assigned conditional on $W_i$
-\end{itemize}\medskip\pause{}
-
-Key condition: the controls are flexible enough to make $E[Z_i\mid W_i]$ linear
-\vspace{-0.7cm}
-\begin{itemize}
-\item E.g. $W_i$ is a set of mutually exclusive strata dummies
-\item IV then identifies a weighted-average of conditional-on-$W_i$ IVs
-\end{itemize}\medskip\pause{}
-
-If $E[Z_i\mid W_i]$ is nonlinear, IV may be biased (even w/constant effects)
-\begin{itemize}
-\item Key practical takeaway: it's good to check sensitivity to how controls are parameterized (add interactions, higher-order polynomials, etc.)
-\end{itemize}
-\end{frame}
-
-\subsection{Characterizing Compliers}
-
-\begin{frame}{Who Are the Compliers?}
-Characterizing the $i$ that make up the IV estimand (w/$D_i(1)>D_i(0)$) is key for understanding internal vs. external validity \smallskip
-\begin{itemize}
-\item Unfortunately we can't identify compliers directly: we only observe $D_i(1)$ (when $Z_i=1$) or $D_i(0)$ (when $Z_i=0$), not both together!
-\end{itemize}\bigskip\pause{}
-As it turns out, we can still characterize compliers by their outcomes ($Y_i(0)$ and $Y_i(1)$) and by other observables $X_i$\smallskip
-\begin{itemize}
-\item Comparing $E[X_i\mid D_i(1)>D_i(0)]$ to $E[X_i]$ can shed light on how $E[Y_i(1)-Y_i(0)\mid D_i(1)>D_i(0)]$ compares to $E[Y_i(1)-Y_i(0)]$
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Outcomes}
-Computing $E[Y_i(1)\mid D_i(1)>D_i(0)]$ is surprisingly easy in the IA setup\smallskip
-\begin{itemize}
-\item Define $W_i=Y_iD_i$, and note that this new outcome has potentials with respect to $D_i$ of $W_i(1)=Y_i(1)$ and $W_i(0)=0$\smallskip\pause{}
-\item Thus IV with $W_i$ as the outcome identifies $E[W_i(1)-W_i(0)\mid D_i(1)>D_i(0)]=E[Y_i(1)\mid D_i(1)>D_i(0)]$
-\end{itemize}\medskip\pause{}
-Similar logic shows that IV with $Y_i(1-D_i)$ as the outcome and $1-D_i$ as the treatment identifies $E[Y_i(0)\mid D_i(1)>D_i(0)]$\smallskip
-\begin{itemize}
-\item So easy to do! And extends to covariates / multiple IVs...
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Illustration: Angrist et al. (2013) Charter School IV}
-
-\begin{center}
-	\includegraphics[width=1\textwidth]{./lecture_includes/apw_2013.png}
-\end{center}
-Decomposing
-\vspace{-0.5cm}
-\begin{align*}
-LATE=&\underbrace{E[Y_i(1)\mid D_i(1)>D_i(0)]-E[Y_i(0)\mid D_i=0]}_{\lambda_1} \\
-&- \underbrace{(E[Y_i(0)\mid D_i(1)>D_i(0)]-E[Y_i(0)\mid D_i=0])}_{\lambda_0}
-\end{align*}
-\vspace{-0.7cm}
-
-shows that charter compliers have typical counterfactual achievement
-
-\end{frame}
-
-\begin{frame}{Covariates}
-For covariates $X_i$ (not affected by $D_i$) we can follow a similar trick:
-\begin{itemize}
-\item Either IV'ing $X_iD_i$ on $D_i$ or IV'ing $X_i(1-D_i)$ on $1-D_i$ identifies complier characteristics $E[X_i\mid D_i(1)>D_i(0)]$\smallskip
-\item Shouldn't be very different (implicit balance test); can be averaged
-\end{itemize}\bigskip\pause{}
-Can be useful to compare with always- and never-taker means:
-\begin{itemize}
-\item AT: $E[X_i\mid D_i(1)=D_i(0)=1]=E[X_i\mid D_i=1,Z_i=0]$\smallskip
-\item NT: $E[X_i\mid D_i(1)=D_i(0)=0]=E[X_i\mid D_i=0,Z_i=1]$
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Illustration: Angrist et al. (2023) Charter School IV --- Characteristics}
-
-\vspace{-0.2cm}
-\begin{center}
-	\includegraphics[width=0.9\textwidth]{./lecture_includes/hoee_characteristics.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Fancier Things}
-
-General result: $E[g(X_i,Y_i(d))\mid D_i(1)>D_i(0)]$ for any $g(\cdot)$ and any $d\in\{0,1\}$ is identified by $\beta$ in the IV regression:
-\begin{align*}
-g(X_i,Y_i)\times \mathbf{1}[D_i=d]&=\alpha + \beta\mathbf{1}[D_i=d] + \varepsilon_i\\
-\mathbf{1}[D_i=d]&= \mu + \pi Z_i + \nu_i
-\end{align*}\pause{}
-\vspace{-0.5cm}
-
-Lots of fun stuff we can do here. E.g.: distributions\smallskip
-\begin{itemize}
-\item $g(X_i,Y_i)=\mathbf{1}[Y_i\le y]$ estimates the CDF of complier potential outcomes, $F(y)=Pr(Y_i(d)<y\mid D_i(1)>D_i(0))$\smallskip
-\item $g(X_i,Y_i)=\frac{1}{h}K(\frac{Y_i-y}{h})$ estimates the corresponding PDF, where $K(\cdot)$ is a kernel function and $h$ is a bandwidth 
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Illustration: Angrist et al. (2023) Charter School IV --- Distributions}
-\vspace{-0.2cm}
-\begin{center}
-	\includegraphics[width=0.9\textwidth]{./lecture_includes/hoee_distribution.png}
-\end{center}
-\end{frame}
-
-\begin{frame}{Outside the Basic IA Setup}
-
-The same logic applies to IV regressions with flexible controls \smallskip
-\begin{itemize}
-\item E.g. \emph{ivreg}ing $Y_iD_i$ on $D_i$ instrumenting by $Z_i$ and controlling for cell FE ID's a weighted avg of within-cell $E[Y_i(1)\mid D_i(1)>D_i(0)]$\smallskip\pause{}
-\item Abadie (2003) ``kappa-weighting'' is an alternative approach for unweighted averages (and other things)
-\end{itemize}\bigskip\pause{}
-
-Logic also goes through with continuous instruments\smallskip
-\begin{itemize}
-\item E.g. can always mechanically decompose an IV on a binary $D_i$ into implied ``$Y(1)$'' and ``$Y(0)$'' terms
-\item Unfortunately, things get trickier with non-binary treatments
-\end{itemize}
-
-\end{frame}
-
+%=============================================================
 \subsection{Diff-in-Diff and IV}
+%=============================================================
 
-\begin{frame}{What about Diff-in-Diff?}
-Most LATE-style discussions of IV identification are ``design-based'': \\ i.e., the instrument is assumed to be drawn randomly, as if in an RCT 
-\begin{itemize}
-\item But not all instruments are easily thought of this way (e.g. distance)
-\end{itemize}\medskip\pause{}
+\begin{frame}{IV in a Difference-in-Differences Framework}
+Not all instruments arise from true randomization. When the instrument
+is a geographic or historical variable (e.g.\ distance to railroad), we
+often rely on \textbf{parallel trends} for credibility.
 
-Luckily, whenever you have a reduced form \& first stage that are causal and exclusion+monotonicity hold, the IV ratio has a LATE interpretation
-\begin{itemize}
-\item E.g. diff-in-diff IV, for distance measure $Z_i\in\{0,1\}$ and $t\in\{1,2\}$:
-\vspace{-0.4cm}
+\medskip
+\textbf{DiD-IV specification:}
 \begin{align*}
-Y_{it}&=\alpha_i + \tau_t + \beta D_{it} + \epsilon_{it} \\
-D_{it}&=\mu_i + \lambda_t + \pi Z_{i}\times\mathbf{1}[t=2] + \epsilon_{it}
+Y_{it} &= \alpha_i + \tau_t + \beta D_{it} + \epsilon_{it} \\
+D_{it} &= \mu_i + \lambda_t + \pi\,(Z_i\times\mathbf{1}[t=2]) + \eta_{it}
 \end{align*}
-\vspace{-1cm}
-
-Parallel trends in $Z_i$ make the reduced form \& first stage causal\pause{}
-\item Recent TWFE literature becomes relevant with fancier specifications
+\begin{itemize}
+  \item $Z_i\in\{0,1\}$: indicator for high-exposure group
+        (e.g.\ county near railroad plan)
+  \item Parallel trends in $Z_i$ make the reduced form and first stage
+        causal---the DiD itself is the RF/FS
+  \item The IV estimate $\hat\beta$ has a LATE interpretation if
+        exclusion + monotonicity hold
+  \item Recent TWFE literature (Callaway--Sant'Anna, Roth--Sant'Anna)
+        applies directly to DiD-IV with staggered treatment
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Example: Duflo (2001) School-Building Diff-in-Diff}
+\begin{frame}{Example: Duflo (2001) School-Building DiD-IV}
+Duflo (2001, \emph{AER}): estimated the returns to schooling using Indonesia's
+INPRES school-construction program (1973--74) as an instrument.
 \begin{center}
-	\includegraphics[width=1\textwidth]{./lecture_includes/duflo_2001.png}
+  \includegraphics[width=0.9\textwidth]{./lecture_includes/duflo_2001.png}
 \end{center}
-Here $Z_i=$ growing up in a region with intensive school building
+\begin{itemize}
+  \item $Z_i$: growing up in a high-construction region (instrument)
+  \item $D_i$: years of schooling (treatment)
+  \item Parallel pre-trends across regions: DD first-stage + reduced form
+\end{itemize}
 \end{frame}
 
-\section{Formula Instruments}
+%=============================================================
+\section{Formula Instruments: Shift-Share and Recentered IV}
+%=============================================================
 
 \begin{frame}{Exogenous Shocks with Non-Random Exposure}
-Increasingly, researchers construct instruments from multiple sources of variation --- only some of which is viewed as exogenous. E.g.:
-\begin{itemize}
-\item Shift-share instruments $Z_i=\sum_k s_{ik}g_k$, which average together a set of shocks $g_k$ with predetermined exposure shares $s_{ik}$
-\item IVs capturing spillovers across social networks/geographies 
-\item ``Simulated'' instruments, capturing eligibility for a public program
-\end{itemize}\medskip\pause{}
+Increasingly, researchers construct instruments from multiple sources of
+variation, only some of which is exogenous:
 
-Generically, $Z_i=f_i(g,s)$ where $g=(g_1,\dots,g_k)$ is a set of shocks, $s$ is some measure of shock exposure, and $f_i(\cdot)$ is a known formula
+\medskip
+\textbf{Generic form:} $Z_i = f_i(g,s)$
 \begin{itemize}
-\item How can we leverage exogeneity in $g$, allowing $s$ to be non-random?
+  \item $g=(g_1,\ldots,g_K)$: a set of \textbf{shocks} (e.g.\ industry-level
+        import growth, robot adoption in Europe)
+  \item $s$: \textbf{exposure} of unit $i$ to those shocks
+        (e.g.\ pre-period industry employment shares)
+  \item $f_i(\cdot)$: known formula (linear shift-share, market access, etc.)
 \end{itemize}
 
+\medskip
+\textbf{Challenge:} $s$ is often not randomly assigned---regions with
+different industrial compositions have different pre-trends.
+
+\medskip
+\textbf{Key question:} How can we leverage exogeneity in $g$ while
+allowing $s$ to be non-random?
 \end{frame}
 
-\subsection{Shift-Share IV}
-
-\begin{frame}{Example: Autor, Dorn, and Hanson (2013/2014)}
-ADH study the effects of rising Chinese import competition on US commuting zones in the 1990's and 2000's
+\begin{frame}{Shift-Share IV: The ADH Design Revisited}
+Autor, Dorn, Hanson (2013, \emph{AER}) study the effect of Chinese import
+competition on US local labor markets using:
+\[
+Z_i = \sum_k \underbrace{s_{ik}}_{\text{share}} \times
+             \underbrace{g_k^{\text{OTH}}}_{\text{shock}}
+\]
 \begin{itemize}
-\item Treatment $X_{i}$: growth of Chinese imports in CZ $i$
-\item Main outcome $Y_{i}$: change in manufacturing employment in CZ $i$
-\end{itemize}\medskip\pause{}
-
-They use a shift-share instrument $Z_{i}=\sum_k s_{ik}g_{k}$, where:
-\begin{itemize}
-\item Shocks $g_k$: industry $k$'s Chinese import growth in non-US economies
-\item Shares $s_{ik}$: pre-period employment share of industry $k$ in CZ $i$
-\end{itemize}\medskip\pause{}
-
-Idea: $Z_i$ predicts $X_i$ with proxies for underlying productivity shocks  
-\begin{itemize}
-\item Fairly intuitive ... but what do we need for it to work? 
-\end{itemize}
-\end{frame}
-
-\begin{frame}{SSIV with Exogenous Shocks}
-
-Borusyak, Hull, and Jaravel (2022) show shift-share IV can work when
-\begin{itemize}
-\item The shocks $g_k$ are exogenous, at least conditional on some $q_k$
-\item There is enough independent variation in the shocks (i.e. large $K$)
-\end{itemize}\bigskip\pause{}
-
-Intuitively, $Z_i=\sum_k s_{ik}g_{k}$ works as a ``translation device,'' bringing the $k$-level variation to bear on causal effects at the $i$ level
-\begin{itemize}
-\item E.g. in ADH, an industry-level natural experiment can be used to estimate effects at the commuting zone level
-\item The shares $s_{ik}$ used for this translation do not need to be exogenous!
+  \item \textbf{Shares} $s_{ik}$: 1990 employment share of industry $k$ in CZ $i$
+  \item \textbf{Shocks} $g_k^{\text{OTH}}$: growth of Chinese imports to
+        \emph{other} high-income countries (Australia, Denmark, Finland,
+        Germany, Japan, New Zealand, Spain, Switzerland)
 \end{itemize}
 
-\end{frame}
-
-\begin{frame}{Two Practical Considerations}
-
-Need to control for $E[Z_i\mid s,q]=E[\sum_k s_{ik}g_{k}\mid s,q]=\sum_k s_{ik}E[g_k\mid q]$ \\ in order to isolate the as-good-as-random variation in shocks
+\medskip
+\textbf{Identification logic:}
 \begin{itemize}
-\item When $E[g_k\mid q]=q_k^\prime\gamma$, this means controlling for $\sum_k s_{ik}q_k$ 
-\item E.g. in ADH, to isolate within-period shock variation, need to control for $\sum_k s_{ik}\times (\text{period FE})$
-\end{itemize}\bigskip\pause{}
-
-Need to adjust SEs for a non-standard clustering: $Z_i=\sum_k s_{ik}g_k$ and $Z_j=\sum_k s_{jk} g_k$ are correlated via their common exposure to shocks
-\begin{itemize}
-\item Easy fix: use the \emph{ssaggregate} Stata/R packages to translate SSIV estimation to the level of identifying variation (shocks)
+  \item Other-country import growth reflects Chinese productivity improvements
+        (the exogenous source)
+  \item The pre-period shares ``translate'' industry-level shocks to the
+        commuting zone level
+  \item Shares need not be exogenous; the shocks must be
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Estimating Exogenous-Shock SSIV Regressions in Stata}
+\begin{frame}{Borusyak, Hull, and Jaravel (2022): Formal SSIV Theory}
+\textbf{Theorem (BHJ 2022):} Shift-share IV $\hat\beta^{SSIV}$ is
+consistent for $\beta$ if:
+\begin{enumerate}
+  \item Shocks $g_k$ are exogenous conditional on shock-level controls $q_k$:
+        $E[g_k\mid q_k,s]=E[g_k\mid q_k]$
+  \item The shocks provide enough independent variation: large $K$
+        with no single shock dominating
+\end{enumerate}
+
+\medskip
+\textbf{Two practical consequences:}
+\begin{enumerate}
+  \item \textbf{Control for $\sum_k s_{ik}q_k$}: this ``expected instrument''
+        nets out any predictable component of the shocks. In ADH, control
+        for $\sum_k s_{ik}\times(\text{period FE})$ to isolate within-period
+        shock variation.
+  \item \textbf{Cluster standard errors at the shock level}: $Z_i$ and $Z_j$
+        are correlated if they share industry exposure. Use the
+        \code{ssaggregate} Stata/R package to translate SSIV into a
+        shock-level regression (standard F-stat, correct SEs).
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Estimating SSIV with \texttt{ssaggregate} (Stata)}
 \vspace{-0.3cm}
 \begin{center}
 \includegraphics[scale=0.27]{./lecture_includes/ssaggregate.png}
 \end{center}
-To install: \code{ssc install ssaggregate}
+Install: \code{ssc install ssaggregate}\quad
+R equivalent: \code{ssaggregate} package on CRAN.
+
+\medskip
+This translates the CZ-level regression to an \emph{industry}-level
+regression---the natural level of identifying variation.
 \end{frame}
 
-\begin{frame}{Autor et al. (2013) Revisited}
+\begin{frame}{ADH Estimates: Original vs.\ BHJ-Corrected}
 \begin{center}
-\includegraphics[scale=0.52]{./lecture_includes/adh_bhj_restud.png}
+\includegraphics[scale=0.48]{./lecture_includes/adh_bhj_restud.png}
 \end{center}
-\begin{itemize}
-\item Columns 3-7 include the key  $\sum_k s_{ik}\times (\text{period FE})$ control
-\item Standard errors / first stage F-stat.'s computed via \emph{ssaggregate}
-\end{itemize}
-\end{frame}
-
-\subsection{Recentered IV}
-\begin{frame}{Beyond Shift-Share}
-
-Suppose we wanted to estimate the economic impact of new transportation upgrades (e.g. new high speed rail construction)
-\begin{itemize}
-\item Economic theory tells us to expect spillovers: easier travel increases productivity across all cities $i$ in a country, to different extents
-\item E.g. \emph{market access}: $X_i=\sum_j \tau(g,loc_i,loc_j)^{-1}pop_j$ where $g$ captures the railroad network, $loc_i$ gives lat/lon of cities, and $pop_i$ is city size
-\end{itemize}\bigskip\pause{}
-
-Like a more complex shift-share: $Z_i=f_i(g,s)$ for $s=(loc_i,pop_i)_{i=1}^{N}$
-\begin{itemize}
-\item Suppose we had a natural experiment in high-speed rail construction; can we ``translate'' these $g$ shocks via the market access mapping?
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Recentered IV}
-
-Borusyak and Hull (2023) show how to leverage exogenous $g$ in $f_i(g,s)$:
-\begin{enumerate}
-\item Specify \emph{counterfactual} exogenous shocks $g^{(1)},\dots,g^{(C)}$ which may well have occurred (e.g. shuffle the timing of new rail construction)
-\item Recompute the instrument: $Z_i^{(c)}=f_i(g^{(c)},s)$, for $c=1,\dots,C$
-\item Take the average (``expected instrument''): $\mu_i=\frac{1}{C}\sum_i Z_i^{(c)}$
-\end{enumerate}\bigskip\pause{}
-
-Either controlling for $\mu_i$ or using the recentered $\tilde{Z}_i=Z_i-\mu_i$ avoids any bias from endogeneity/non-randomness in $Z_i$
-\begin{itemize}
-\item Analogous to controlling for $\sum_k s_{ik}q_k$ in shift-share IV! 
-\item BH also discuss the analog of non-standard SSIV clustering:\\ the solution is a bit more non-standard (randomization inference)
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}[t]{Illustration: High-Speed Rail in China} 
-\vspace{-0.3cm}
-	\begin{center}
-		149 lines were built or planned (as of April 2019)
-
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/Lines_actual_planned_nocolor.png}
-	\end{center}
-\end{frame}
-
-\begin{frame}[t]{Illustration: High-Speed Rail in China} 
-\vspace{-0.3cm}
-	\begin{center}
-		The 83 lines actually built by 2016. Suppose exact timing is random
-
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/Line_panel2016.png}
-	\end{center}
-\end{frame}
-
-\begin{frame}[t]{Illustration: High-Speed Rail in China} 
-\vspace{-0.3cm}
-	\begin{center}
-		A counterfactual draw of 83 lines by 2016
-
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/Sim_Line_nlink2016.png}
-	\end{center}
-\end{frame}
-
-\begin{frame}[t]{Illustration: High-Speed Rail in China} 
-\vspace{-0.3cm}
-	\begin{center}
-		Expected MA growth, $\mu_i$
-
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/DateExpected2016.png}
-	\end{center}
-\end{frame}
-
-\begin{frame}{Illustration: High-Speed Rail in China}
-	\begin{center}
-Recentered MA growth, $\tilde{Z}_i$
-
-	\includegraphics[trim={1cm 0cm 0cm 1cm},clip,width=11cm]{lecture_includes/NlinkRecentered2016.png}
-	\end{center}
-\end{frame}
-
-\begin{frame}[label=HSRTable]{Adjusted Estimates of Market Access Effects}
-	\begin{center}
-	\includegraphics[width=0.9\textwidth]{lecture_includes/hsr_tab.png}
-	
-	\footnotesize{Regressions of log employment growth on log market access growth in 2007--2016. Spatial-clustered standard errors in parentheses; permutation-based 95\% CI in brackets}
-	\end{center}
-\end{frame}
-
-\begin{frame}{Recentering for Power}
-
-Leveraging non-random exposure can dramatically improve precision when leveraging exogenous shocks in an IV...
-\begin{itemize}
-\item ... as long as you recenter to use this variation ``safely''
-\end{itemize}\medskip\pause{}
-
-Ex: Medicaid eligibility as a treatment combining statewide policy shocks and individual exposure (income, family structure, etc)
-\begin{itemize}
-\item In settings where policy shocks are plausibly exogenous, standard approach is to use them directly as instruments (``simulated IV'')
-\item BH approach: use eligibility itself, but recenter: e.g. adjust for $i$'s avg. eligibility across permutations of policies (swap MA \& RI, say)
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Illustration: ACA Medicaid Expansion}
-
-	\begin{center}
-	\includegraphics[width=1\textwidth]{lecture_includes/aca_ss.png}
-	\end{center}
-
-\footnotesize{1\% ACS sample of non-disabled adults in 2013--14, diff-in-diff IV regressions using one of the two instruments. Controls include state and year fixed effects and an indicator for Republican governor interacted with year. State-clustered standard errors in parentheses; wild score bootstrap 95\% CI in brackets} 
-
-\end{frame}
-
-\section{Chinese Economic Applications: Session II}
-
-\begin{frame}{IV Methods in Chinese Economic History}
-
-Beyond trade and infrastructure, China's unique institutional history offers compelling IV settings:\pause
-
-\begin{itemize}
-  \item The Great Leap Forward (1958--62): radical collectivization and grain procurement policies created quasi-exogenous variation in famine severity
-  \item One-child policy: regional variation in enforcement creates IVs for fertility
-  \item SOE reforms: variation in privatization timing and intensity
-  \item Financial repression: capital controls and credit allocation
-\end{itemize}\medskip\pause
-
-In this section, we examine a landmark paper using IV to study one of the most consequential episodes in modern Chinese history:
-
-\begin{itemize}
-  \item \textbf{Meng, Qian, Yared (2015, ReStud)}: The institutional causes of China's Great Famine, 1959--1961
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Paper 3: ``The Institutional Causes of China's Great Famine''}
-
 {\small
-\textbf{Citation:} Meng, X., Qian, N., and Yared, P. (2015). ``The Institutional Causes of China's Great Famine, 1959--1961.'' \emph{Review of Economic Studies}, 82(4): 1568--1611.
-}\medskip\pause
+\begin{itemize}
+  \item Columns 3--7 add $\sum_k s_{ik}\times(\text{period FE})$ control
+  \item SEs and first-stage F computed via \code{ssaggregate}
+  \item Core result robust: Chinese import growth $\Rightarrow$ large
+        manufacturing employment declines in US commuting zones
+\end{itemize}
+}
+\end{frame}
 
-\textbf{Historical context:} The Great Leap Forward Famine (1959--61) is estimated to have killed \textbf{15--55 million people} --- one of the deadliest famines in human history.\medskip\pause
+%=============================================================
+\subsection{Recentered IV}
+%=============================================================
 
-\textbf{Competing explanations:}
+\begin{frame}{Beyond Shift-Share: Recentered IV}
+Some formula instruments cannot be written as simple shift-shares.
+Example: \textbf{market access}
+\[
+X_i = \sum_j \tau(g,\text{loc}_i,\text{loc}_j)^{-1}\,\text{pop}_j
+\]
+where $g$ is the railroad network, $\text{loc}_i$ is the location of
+city $i$, and $\text{pop}_j$ is city $j$'s population.
+
+\medskip
+\textbf{Borusyak and Hull (2023) recentering approach:}
 \begin{enumerate}
-  \item \textbf{Weather} (\emph{natural} cause): Bad harvests due to drought and floods
-  \item \textbf{Institutional} (\emph{policy} cause): Grain procurement quotas that extracted food from rural areas even when harvests were poor
-\end{enumerate}\medskip\pause
+  \item Specify $C$ \emph{counterfactual} shock draws $g^{(1)},\ldots,g^{(C)}$
+        (e.g.\ random permutations of rail construction timing)
+  \item Recompute the instrument: $Z_i^{(c)}=f_i(g^{(c)},s)$
+  \item ``Expected instrument'': $\mu_i = \frac{1}{C}\sum_c Z_i^{(c)}$
+\end{enumerate}
 
-\textbf{Why it matters:} Understanding the cause has implications for policy accountability, state capacity research, and the political economy of authoritarianism
-
-\end{frame}
-
-\begin{frame}{MQY 2015: Research Question and Setting}
-
-\textbf{Central Question:} Were the deaths caused primarily by weather shocks (natural disaster) or by government grain procurement policy (institutional failure)?\medskip\pause
-
-\textbf{Empirical challenge:}
+Either control for $\mu_i$ or use the \textbf{recentered instrument}
+$\tilde{Z}_i = Z_i-\mu_i$:
 \begin{itemize}
-  \item Provinces that had bad harvests \emph{also} received different procurement quotas
-  \item Procurement levels and mortality are jointly determined: it's hard to disentangle the causal chain
-  \item Selection: provinces with different political environments may respond differently to shocks
-\end{itemize}\medskip\pause
-
-\textbf{Key data challenge:} Historical Chinese provincial statistics were suppressed or manipulated during the famine period --- requires careful reconstruction
-
-\end{frame}
-
-\begin{frame}{MQY 2015: IV Strategy}
-
-\textbf{Two-pronged IV approach:}\medskip\pause
-
-\textbf{(1) Weather as IV for grain production:}
-\begin{itemize}
-  \item Use \textbf{rainfall and temperature} as instruments for actual grain production
-  \item Weather is plausibly exogenous to government procurement policy
-  \item Identifies the ``weather effect'': how much of mortality variation is explained by food supply shocks alone
-\end{itemize}\medskip\pause
-
-\textbf{(2) Grain production shock as IV for procurement:}
-\begin{itemize}
-  \item The grain production shock (instrumented by weather) shifts procurement quotas
-  \item Allows estimation of the effect of \emph{procurement} on mortality, holding production constant
-  \item Key identification insight: procurement responded to \emph{planned} output, not actual output --- creating a wedge between food available and food extracted
+  \item Analogous to controlling for $\sum_k s_{ik}q_k$ in SSIV
+  \item Standard errors: use randomization inference (permutation-based CI)
 \end{itemize}
-
 \end{frame}
 
-\begin{frame}{MQY 2015: Data and Methodology}
-
-\textbf{Unit of observation:} 28 Chinese provinces, annual panel 1954--1966\medskip\pause
-
-\textbf{Outcome variables:}
-\begin{itemize}
-  \item Province-level mortality rates (death rates per 1,000 persons)
-  \item Excess mortality relative to pre-famine trend
-  \item Grain production, procurement quantities, and grain consumption
-\end{itemize}\medskip\pause
-
-\textbf{Data sources:}
-\begin{itemize}
-  \item Reconstructed provincial mortality statistics from Chinese archival records
-  \item Grain production and procurement data from NBS and provincial records
-  \item Historical weather station data: rainfall and temperature by province
-  \item Political economy variables: provincial party leadership characteristics
-\end{itemize}\medskip\pause
-
-\textbf{Specification:} Panel IV regression with province and year fixed effects; two-stage least squares using weather as instrument for production/procurement
-
-\end{frame}
-
-\begin{frame}{MQY 2015: Key Results}
-
-\textbf{Decomposing famine mortality:}\pause
-\begin{itemize}
-  \item \textbf{Weather} explains only \textbf{12--15\%} of excess mortality variation across provinces
-  \item The majority of variation is explained by \textbf{institutional} factors
-\end{itemize}\medskip\pause
-
-\textbf{Role of grain procurement:}
-\begin{itemize}
-  \item A 10\% increase in grain procurement $\rightarrow$ approximately \textbf{4--5\%} increase in the mortality rate
-  \item Procurement continued at high levels even as grain production fell sharply
-  \item Provinces with higher procurement intensity faced far greater mortality
-\end{itemize}\medskip\pause
-
-\textbf{Political economy mechanisms:}
-\begin{itemize}
-  \item Provinces led by more politically ambitious officials had higher procurement
-  \item Information suppression: local officials hid evidence of famine to avoid political censure, exacerbating the crisis
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{MQY 2015: Discussion and Implications}
-
-\textbf{Methodological lessons:}
-\begin{itemize}
-  \item Illustrates IV in a \textbf{historical/archival} setting with imperfect data
-  \item The weather instrument satisfies: relevance (weather $\rightarrow$ grain production), exclusion (weather affects mortality only through food supply)
-  \item Province fixed effects absorb time-invariant confounders; year FEs absorb common shocks
-\end{itemize}\medskip\pause
-
-\textbf{Broader implications:}
-\begin{itemize}
-  \item Famines in democratic societies are rare (Sen 1981): accountability mechanisms prevent government inaction
-  \item Authoritarian information suppression can turn a natural shock into a catastrophe
-  \item Evidence that institutional design, not just natural endowments, drives development outcomes
-\end{itemize}\medskip\pause
-
-\textbf{Legacy:} This paper spawned a large literature on the political economy of China's Great Leap Forward and on information and governance in autocracies
-
-\end{frame}
-
-\begin{frame}{Summary: Chinese Economics Papers Using IV}
-
+\begin{frame}[t]{Illustration: China High-Speed Rail (Recentered IV)}
+\vspace{-0.3cm}
 \begin{center}
-\small
-\begin{tabular}{p{1.5cm}p{2.3cm}p{2.0cm}p{2.5cm}}
-\hline
-\textbf{Paper} & \textbf{Question} & \textbf{IV} & \textbf{Finding} \\
-\hline
-ADH (2013) \newline \emph{AER} & China trade $\rightarrow$ US jobs & Imports in other countries (shift-share) & $-$2M mfg. jobs 1990--2007 \\[4pt]
-BDQ (2020) \newline \emph{JPE} & Roads $\rightarrow$ China GDP & Historical plan (straight-line) & +10--15\% growth near highways \\[4pt]
-MQY (2015) \newline \emph{ReStud} & Causes of Great Famine & Weather $\rightarrow$ production $\rightarrow$ procurement & Policy drove 85\%+ of deaths \\
-\hline
-\end{tabular}
-\end{center}\medskip\pause
+149 planned or built HSR lines (as of April 2019)
 
-\textbf{Common themes:}
-\begin{itemize}
-  \item All three papers use creative IV designs to solve sharp endogeneity problems
-  \item Exogenous variation comes from unexpected sources: competitor imports, military plans, weather
-  \item Results have major policy implications for trade, development, and governance
-\end{itemize}
-
+\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=10.5cm]%
+  {lecture_includes/Lines_actual_planned_nocolor.png}
+\end{center}
 \end{frame}
 
-\section{Concluding Thoughts}
+\begin{frame}[t]{Illustration: China High-Speed Rail (Recentered IV)}
+\vspace{-0.3cm}
+\begin{center}
+83 lines built by 2016 --- treat exact timing as random
 
-\begin{frame}{Concluding Thoughts}
+\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=10.5cm]%
+  {lecture_includes/Line_panel2016.png}
+\end{center}
+\end{frame}
 
-We've covered a substantial amount of ground in these two sessions!\pause
-\begin{itemize}
-  \item From basic IV mechanics to advanced recentering and formula instruments
-  \item From classic Angrist (1990) design to cutting-edge Chinese economic applications
-\end{itemize}\bigskip\pause{}
+\begin{frame}[t]{Illustration: China High-Speed Rail (Recentered IV)}
+\vspace{-0.3cm}
+\begin{center}
+A counterfactual draw of 83 lines by 2016
 
-Some general advice on how to approach IV in the ``real world'':
+\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=10.5cm]%
+  {lecture_includes/Sim_Line_nlink2016.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[t]{Illustration: China High-Speed Rail (Recentered IV)}
+\vspace{-0.3cm}
+\begin{center}
+Expected MA growth $\mu_i$ (average over permutations)
+
+\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=10.5cm]%
+  {lecture_includes/DateExpected2016.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{China HSR: Recentered MA Growth and Estimates}
+\begin{center}
+Recentered MA growth $\tilde{Z}_i = Z_i - \mu_i$
+
+\includegraphics[trim={1cm 0cm 0cm 1cm},clip,width=10cm]%
+  {lecture_includes/NlinkRecentered2016.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label=HSRTable]{Adjusted Estimates of HSR Market Access Effects}
+\begin{center}
+\includegraphics[width=0.88\textwidth]{lecture_includes/hsr_tab.png}
+
+{\footnotesize Regressions of log employment growth on log market
+access growth, 2007--2016. Spatial-clustered SEs in parentheses;
+permutation-based 95\% CI in brackets.}
+\end{center}
+\end{frame}
+
+%=============================================================
+\section{IV Applications: Chinese Economic Context}
+%=============================================================
+
+\begin{frame}{Overview: Two IV Papers on China (Field Top Journals, Post-2010)}
+We study two papers that use IV designs to understand major Chinese
+economic and historical phenomena:
 \begin{enumerate}
-\item Figure out what the reduced form and first stage regressions are, \\ \& what variation in the instrument(s) they leverage via the controls
-\item Assess the plausibility of as-good-as-random assignment (or parallel trends) of this variation, both theoretically and empirically
-\item Interrogate exclusion, which lets you interpret RF/FS, and monotonicity/complier stats if heterogeneous effects seem important
+  \item \textbf{Meng, Qian, Yared (2015, \emph{Review of Economic Studies})}\\
+        ``The Institutional Causes of China's Great Famine, 1959--1961''\\
+        {\small Weather as IV for grain production; production as IV for
+        procurement. 28 Chinese provinces, 1954--1966.}
+  \medskip
+  \item \textbf{Khandelwal, Schott, Wei (2013, \emph{Quarterly Journal of
+        Economics})}\\
+        ``Trade Liberalization and Embedded Institutional Reform:
+        Evidence from Chinese Exporters''\\
+        {\small Pre-determined WTO quota-removal schedule as quasi-exogenous
+        variation to study how liberalization restructures Chinese export
+        markets.}
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{General Advice for PhD Students}
+% ------ Paper 3: MQY (2015) ------
+\begin{frame}{Paper~3: Meng, Qian, Yared (2015, \emph{ReStud})}
+\begin{block}{Citation}
+  Meng, X., Qian, N., and Yared, P.\ (2015).
+  ``The Institutional Causes of China's Great Famine, 1959--1961.''
+  \textit{Review of Economic Studies}, 82(4): 1568--1611.
+  {\small($\approx$500 Google Scholar citations)}
+\end{block}
 
-\textbf{Finding a good IV:}\pause
-\begin{itemize}
-  \item Think about your setting's institutional details --- what creates exogenous variation?
-  \item Classic sources: lotteries, policy discontinuities, historical accidents, geographic features
-  \item For China specifically: policy rollout timing, administrative boundaries, historical shocks
-\end{itemize}\medskip\pause
+\textbf{Historical context:} The Great Leap Forward Famine (1959--61) killed an
+estimated 15--55 million people---one of the deadliest famines in history.
 
-\textbf{Evaluating IV validity:}
-\begin{itemize}
-  \item Assess relevance with first-stage F-statistics ($>10$ rule of thumb)
-  \item Check exclusion with falsification tests, balance tests, and robustness checks
-  \item Think carefully about who the compliers are and whether LATE is the object of interest
-\end{itemize}\medskip\pause
+\medskip
+\textbf{Central research question:} Were the deaths driven by
+\emph{natural} factors (bad weather $\Rightarrow$ low harvests) or
+\emph{institutional} factors (government grain procurement quotas that
+extracted food even from starving provinces)?
 
-\textbf{Practical tools:}
+\medskip
+\textbf{Why this is hard to identify:}
 \begin{itemize}
-  \item Stata: \code{ivreg2}, \code{ssaggregate}, \code{weakivtest}
-  \item R: \code{AER::ivreg()}, \code{fixest::feols()}, \code{ssaggregate}
+  \item Provinces with bad harvests also tend to receive different
+        procurement quotas---the two are confounded
+  \item Historical Chinese provincial statistics were suppressed and
+        manipulated---data quality is a major challenge
+\end{itemize}
+\end{frame}
+
+\begin{frame}{MQY (2015): IV Identification Strategy}
+\textbf{Two-stage instrumentation chain:}
+
+\medskip
+\textbf{First IV: weather $\to$ grain production}
+\begin{itemize}
+  \item Instrument: province-level annual rainfall and temperature
+        deviations from historical norms
+  \item Relevance: weather directly affects agricultural output (strong
+        first stage)
+  \item Exclusion: weather affects mortality only through food supply---not
+        through government policy (conditional on province + year FE)
 \end{itemize}
 
+\medskip
+\textbf{Second IV: (instrumented) production $\to$ procurement}
+\begin{itemize}
+  \item Key institutional insight: the state set procurement quotas based
+        on \emph{planned} output, not actual output
+  \item A negative production shock (bad weather) reduces actual output
+        but not the quota $\Rightarrow$ extraction rises relative to
+        available food
+  \item This creates a causal chain: weather $\to$ production shock
+        $\to$ effective extraction ratio $\to$ mortality
+\end{itemize}
+\end{frame}
+
+\begin{frame}{MQY (2015): Data and Specification}
+\textbf{Unit of observation:} 28 Chinese provinces, annual panel 1954--1966
+
+\medskip
+\textbf{Outcome variables:}
+\begin{itemize}
+  \item Province-level mortality rates (reconstructed from archival records)
+  \item Excess mortality relative to pre-famine trend (1954--1958)
+  \item Grain production, procurement, and estimated caloric availability
+\end{itemize}
+
+\medskip
+\textbf{Data sources:}
+\begin{itemize}
+  \item Reconstructed provincial vital statistics (Banister 1987; Coale 1981)
+  \item Grain production and procurement: NBS and provincial yearbooks
+  \item Meteorological data: Chinese weather station network records
+  \item Provincial party leadership characteristics
+\end{itemize}
+
+\medskip
+\textbf{Specification:}
+\[
+\text{Mortality}_{pt} = \alpha_p + \mu_t + \beta\,\text{Procurement}_{pt}
+  + X_{pt}^\prime\gamma + \varepsilon_{pt}
+\]
+Instrumenting $\text{Procurement}_{pt}$ with weather-instrumented
+$\widehat{\text{Production}}_{pt}$ (2SLS).
+\end{frame}
+
+\begin{frame}{MQY (2015): Main Results}
+\textbf{Decomposing famine mortality:}
+\begin{itemize}
+  \item \textbf{Weather} explains only $\approx$12--15\% of the
+        cross-province variation in excess mortality
+  \item The dominant factor is \textbf{institutional}: grain procurement
+        continued at or near planned levels even as output collapsed
+\end{itemize}
+
+\medskip
+\textbf{Procurement effects:}
+\begin{itemize}
+  \item A 10\% increase in procurement $\Rightarrow$ $\approx$4--5\%
+        increase in the province mortality rate (IV estimate)
+  \item OLS understates the causal effect (endogeneity: provinces with
+        higher mortality may have gotten some relief)
+\end{itemize}
+
+\medskip
+\textbf{Political economy mechanisms:}
+\begin{itemize}
+  \item Provinces with more politically ambitious leaders had
+        systematically higher procurement ratios
+  \item \emph{Information suppression}: local officials under-reported
+        famine deaths to Beijing, preventing corrective policy
+\end{itemize}
+\end{frame}
+
+\begin{frame}{MQY (2015): Robustness and Sensitivity}
+\textbf{Instrument validity tests:}
+\begin{itemize}
+  \item \emph{Pre-trend placebo}: weather shocks in 1954--1958 do not
+        predict pre-famine mortality trends (no anticipatory effects)
+  \item \emph{Exclusion check}: weather shocks show no direct correlation
+        with non-food-related causes of mortality
+  \item \emph{Falsification}: weather in neighboring provinces (which
+        would affect procurement indirectly through plan comparisons)
+        shows no direct effect on mortality
+\end{itemize}
+
+\medskip
+\textbf{Sensitivity analysis:}
+\begin{itemize}
+  \item Alternative mortality reconstructions (Coale vs.\ Banister
+        estimates) give similar results
+  \item Controlling for political characteristics of provincial leaders
+        (Central Committee membership, seniority) does not alter IV estimates
+  \item Dropping years of the worst famine (1960--61) to check
+        whether results are driven by outlier provinces: robust
+\end{itemize}
+
+\medskip
+\textbf{Contribution:} First \emph{causal} evidence distinguishing natural from
+institutional causes of a major historical famine; influential for the
+political economy of authoritarianism literature.
+\end{frame}
+
+% ------ Paper 4: KSW (2013) ------
+\begin{frame}{Paper~4: Khandelwal, Schott, Wei (2013, \emph{QJE})}
+\begin{block}{Citation}
+  Khandelwal, A., Schott, P.K., and Wei, S.-J.\ (2013).
+  ``Trade Liberalization and Embedded Institutional Reform: Evidence from
+  Chinese Exporters.''
+  \textit{Quarterly Journal of Economics}, 128(4): 2169--2223.
+  {\small($\approx$700 Google Scholar citations)}
+\end{block}
+
+\textbf{Context:}
+\begin{itemize}
+  \item Under the Multi-Fiber Agreement (MFA, 1974--2004), rich countries
+        imposed \emph{quotas} on textile/apparel imports from developing
+        countries
+  \item Quotas were allocated to Chinese firms via administrative process,
+        often to SOEs and politically connected entities
+  \item The WTO Agreement on Textiles and Clothing (ATC) mandated
+        a pre-determined phase-out of all MFA quotas by January 1, 2005
+\end{itemize}
+
+\textbf{Research question:} How did eliminating these embedded institutional
+distortions affect the composition and productivity of Chinese exporters?
+\end{frame}
+
+\begin{frame}{KSW (2013): Identification --- The ATC Phase-Out as Instrument}
+\textbf{The quasi-experimental design:}
+\begin{itemize}
+  \item The ATC (signed 1994) specified the \emph{exact date} of quota
+        removal for each product category: 1995, 1998, 2002, or 2005
+  \item This schedule was internationally binding, pre-determined, and
+        unrelated to contemporaneous Chinese export performance
+  \item Products removed earlier experience an exogenous ``treatment''
+        of liberalization sooner
+\end{itemize}
+
+\medskip
+\textbf{IV / quasi-experiment:}
+\begin{itemize}
+  \item Treated: quota-constrained products whose quotas were removed
+        in the final ATC stage (2005)
+  \item Comparison: quota-constrained products removed earlier
+        \emph{or} never-constrained products
+  \item The pre-determined removal schedule provides \emph{staggered
+        exogenous variation} in the timing of liberalization
+\end{itemize}
+\end{frame}
+
+\begin{frame}{KSW (2013): Data and Method}
+\textbf{Unit of observation:} Chinese exporting firms $\times$ product
+$\times$ year, 2000--2006
+
+\medskip
+\textbf{Data:}
+\begin{itemize}
+  \item \textbf{Chinese customs records}: firm-level exports by HS10
+        product and destination country (General Administration of Customs)
+  \item \textbf{MFA quota data}: binding quota levels and utilization
+        rates by product and importing country (OTEXA, Eurostat)
+  \item \textbf{Firm characteristics}: ownership type (SOE vs.\ private),
+        registration year, revenue (Annual Survey of Industrial Firms)
+  \item \textbf{ATC removal schedule}: product-level dates from the WTO
+        ATC implementation reports
+\end{itemize}
+
+\medskip
+\textbf{Key outcomes:}
+\begin{itemize}
+  \item Average unit value (proxy for quality) of exports by product
+  \item Productivity of exporters (quantity-based TFP)
+  \item Market share of SOE vs.\ private exporters
+\end{itemize}
+\end{frame}
+
+\begin{frame}{KSW (2013): Findings}
+\textbf{Main results:}
+\begin{itemize}
+  \item After quota removal, average export quality and productivity in
+        previously-constrained products \emph{rise sharply}
+  \item Decomposition: most of the productivity gain is
+        \emph{compositional}---less-productive SOEs exit the market;
+        more-productive private firms enter
+  \item Within-firm productivity improvement is small---the dominant
+        mechanism is reallocation, not learning
+\end{itemize}
+
+\medskip
+\textbf{Robustness and sensitivity:}
+\begin{itemize}
+  \item \emph{Never-constrained products}: no change in quality/productivity
+        around 2005---a clean placebo
+  \item \emph{Pre-trend test}: quality and productivity in constrained
+        products do \emph{not} differ from unconstrained ones before
+        quota removal (parallel pre-trends)
+  \item \emph{Demand-side alternative}: controlling for demand shifts in
+        importing countries (using other exporters' responses) does not
+        change results
+  \item \emph{Product-level fixed effects}: absorb any time-invariant
+        differences in product characteristics correlated with
+        quota-constrained status
+\end{itemize}
+\end{frame}
+
+\begin{frame}{KSW (2013): Contribution and IV Lessons}
+\textbf{Academic contributions:}
+\begin{itemize}
+  \item First rigorous causal evidence that quota-based institutions
+        (quota rents to politically connected firms) \emph{suppressed}
+        Chinese export productivity---liberalization improved allocative
+        efficiency substantially
+  \item Bridges industrial organization (quota rents, market structure)
+        and trade (gains from liberalization)
+  \item Informs the debate on SOE reform and private-sector development
+        in China
+\end{itemize}
+
+\medskip
+\textbf{IV / quasi-experimental methodology lessons:}
+\begin{itemize}
+  \item \textbf{Pre-determined schedule as instrument}: a policy timetable
+        negotiated years earlier provides clean exogenous variation in
+        liberalization timing---similar logic to compulsory-schooling laws
+        or draft lottery designs
+  \item \textbf{Product $\times$ time variation}: staggered treatment design
+        with product and year FEs is now standard in trade research
+  \item \textbf{Decomposition of aggregate effects}: distinguishing
+        within-firm vs.\ between-firm changes is essential for
+        understanding the mechanism
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Comparing the Two Chinese-Context Papers}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+ & \textbf{MQY (2015)} & \textbf{KSW (2013)} \\
+\midrule
+Journal & ReStud & QJE \\
+Setting & Chinese provinces & Chinese exporting firms \\
+Treatment & Grain procurement & Quota removal (liberalization) \\
+IV / quasi-exp. & Weather $\to$ production & ATC pre-determined schedule \\
+Exog.\ source & Annual weather shocks & 1994 ATC product-phase dates \\
+Unit & Province $\times$ year & Firm $\times$ product $\times$ year \\
+Key finding & Policy drove famine mortality & Quotas suppressed productivity \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+\textbf{Common thread:} Both papers exploit \emph{pre-determined} variation---
+weather and internationally negotiated schedules---that is plausibly exogenous
+to the contemporaneous Chinese economic or political environment.
+\end{frame}
+
+%=============================================================
+\section{Conclusions}
+%=============================================================
+
+\begin{frame}{Session 2 Summary}
+\textbf{IV Interpretation (LATE):}
+\begin{itemize}
+  \item IV identifies the LATE among compliers under IA (1994) assumptions
+  \item Monotonicity rules out defiers; characterize compliers to assess
+        external validity
+  \item DiD-IV: parallel trends makes reduced form and first stage causal
+\end{itemize}
+
+\medskip
+\textbf{Formula Instruments:}
+\begin{itemize}
+  \item SSIV: shocks must be exogenous; use \code{ssaggregate} for
+        correct SEs; control for $\sum_k s_{ik}q_k$
+  \item Recentered IV: general formula instruments; subtract expected
+        instrument $\mu_i$; use randomization inference for SEs
+\end{itemize}
+
+\medskip
+\textbf{Chinese Applications (Field Top Journals, Post-2010):}
+\begin{itemize}
+  \item MQY (2015, ReStud): weather IV reveals institutional causes
+        of China's Great Famine
+  \item KSW (2013, QJE): pre-determined ATC schedule reveals that quota
+        rents suppressed Chinese export productivity
+\end{itemize}
+\end{frame}
+
+\begin{frame}{General Advice for PhD Students}
+\textbf{Finding a good IV:}
+\begin{itemize}
+  \item Think about your setting's institutional details---what creates
+        exogenous variation?
+  \item Classic sources: lotteries, policy discontinuities, historical
+        accidents, geographic features, pre-determined schedules
+  \item For China specifically: reform rollout timing, administrative
+        boundaries, historical shocks, quota systems
+\end{itemize}
+
+\medskip
+\textbf{Evaluating IV validity --- the diagnostic checklist:}
+\begin{enumerate}
+  \item Strong first stage ($F>10$, or \code{weakivtest} critical values)
+  \item Pre-trend / balance tests: no differential pre-treatment trends
+  \item Placebo / falsification: instrument does not predict outcomes it
+        should not predict
+  \item Sensitivity to specification: alternative controls, samples,
+        clustering
+  \item Theory: a credible mechanism linking $Z\to D$ and ruling out
+        $Z\to Y$ directly
+\end{enumerate}
 \end{frame}
 
 \begin{frame}{Further Resources}
-
-\textbf{Textbooks and reviews:}
+\textbf{Textbooks:}
 \begin{itemize}
   \item Angrist and Pischke (2009): \emph{Mostly Harmless Econometrics}
-  \item Angrist and Pischke (2015): \emph{Mastering 'Metrics}
-  \item Imbens and Rubin (2015): \emph{Causal Inference in Statistics, Social, and Biomedical Sciences}
-\end{itemize}\medskip\pause
-
-\textbf{Methodological frontiers:}
-\begin{itemize}
-  \item Borusyak, Hull, Jaravel (2022): Shift-share IV formal conditions
-  \item Borusyak and Hull (2023): Recentered IV
-  \item Goldsmith-Pinkham, Sorkin, Swift (2020): SSIV shares as IVs
-  \item Angrist and Koles\'ar (2022): Weak instrument inference
-\end{itemize}\medskip\pause
-
-\textbf{China-specific:}
-\begin{itemize}
-  \item Brandt and Rawski (eds., 2008): \emph{China's Great Economic Transformation}
-  \item Lu and Yu (2015): Trade liberalization and markup dispersion in China
+  \item Imbens and Rubin (2015): \emph{Causal Inference for Statistics}
 \end{itemize}
 
+\medskip
+\textbf{Methodological papers:}
+\begin{itemize}
+  \item Imbens and Angrist (1994, ECTA): LATE theorem
+  \item Staiger and Stock (1997, ECTA): Weak instruments and 2SLS bias
+  \item Borusyak, Hull, Jaravel (2022, ReStud): Shift-share IV theory
+  \item Borusyak and Hull (2023): Recentered IV
+  \item Goldsmith-Pinkham, Sorkin, Swift (2020, AER): SSIV shares as IVs
+  \item Angrist and Koles\'ar (2022): Weak IV inference
+\end{itemize}
+
+\medskip
+\textbf{Practical tools:}
+\begin{itemize}
+  \item Stata: \code{ivreg2}, \code{ssaggregate}, \code{weakivtest},
+        \code{ranktest}
+  \item R: \code{AER::ivreg()}, \code{fixest::feols()}, \code{ssaggregate}
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Your IV Research: Building a Pipeline}
-
-Three questions to ask yourself at every step:\medskip
-\begin{enumerate}
-  \item \textbf{What is my first stage?} \\
-  Is the instrument strongly correlated with the treatment? Check the F-stat.\medskip\pause
-  \item \textbf{What is my reduced form?} \\
-  Does the instrument predict the outcome? Is the sign sensible?\medskip\pause
-  \item \textbf{What is my exclusion restriction?} \\
-  Is there any channel by which the instrument could affect the outcome other than through the treatment? Can you test it?
-\end{enumerate}\medskip\pause
-
-If you can answer all three convincingly, you likely have a credible IV design --- the foundation of publishable empirical work
-
-\end{frame}
-
-\begin{frame}{Keep Calm and \code{ivreg2} On!}
-
+\begin{frame}[plain]
 \begin{center}
-Thank you for your attention throughout both sessions!
-
-\bigskip
-\textbf{Jingxuan Du} \\
-Dongbei University of Finance and Economics (DUFE) \\
-\smallskip
-\url{dujingxuan6@dufe.edu.cn}
-
-\bigskip
-{\small Good luck on your future adventures with IV!}
+\vspace{1cm}
+{\large\color{dufenavy}\textbf{Instrumental Variables --- Session 2}}\\[8pt]
+\rule{0.6\textwidth}{0.5pt}\\[10pt]
+\textbf{Jingxuan Du}\\[4pt]
+Dongbei University of Finance and Economics (DUFE)\\[6pt]
+\texttt{dujingxuan6@dufe.edu.cn}\\[12pt]
+{\color{dufegray}\small Thank you for your engagement across both sessions.\\
+Questions and comments are welcome.}
 \end{center}
 \end{frame}
 
