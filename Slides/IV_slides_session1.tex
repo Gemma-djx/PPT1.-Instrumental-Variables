@@ -1,6 +1,61 @@
 \documentclass{beamer}
-\input{preamble_dufe.tex}
+% 假设preamble_dufe.tex包含基础样式，这里补充必要的包和自定义环境
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
 
+% 定义颜色（匹配原代码中的颜色名）
+\definecolor{dufeteal}{RGB}{0,128,128}
+\definecolor{dufegold}{RGB}{255,215,0}
+\definecolor{dufenavy}{RGB}{0,0,128}
+\definecolor{violetRed}{RGB}{128,0,128}
+\definecolor{pictonBlue}{RGB}{0,191,255}
+\definecolor{bgParam}{HTML}{F0F8FF}
+\definecolor{bgEstim}{HTML}{F5F5DC}
+\definecolor{bgEstor}{HTML}{FFE4E1}
+
+% 自定义tikz样式
+\tikzset{
+  state/.style={circle, draw, minimum size=1em},
+  el/.style={font=\small},
+}
+
+% ========== 核心：自定义列表环境（自动检测项数并调整字体） ==========
+\newcounter{listcount}
+\newenvironment{autoSizedItemize}{
+  \setcounter{listcount}{0}
+  % 先收集所有列表项，统计数量
+  \def\item{\stepcounter{listcount}\origitem}
+  \let\origitem\item
+  \begin{itemize}\let\item\origitem
+}{
+  \end{itemize}
+  % 根据数量调整字体
+  \ifnum\value{listcount}>4
+    \expandafter\gdef\csname @currentitemlabel\endcsname{\tiny\csname @currentitemlabel\endcsname}
+    \renewcommand{\labelitemi}{\tiny\textbullet}
+    \footnotesize % 整体列表字体设为small（可改为\tiny进一步缩小）
+  \fi
+}
+
+% 对enumerate环境做同样处理
+\newenvironment{autoSizedEnumerate}{
+  \setcounter{listcount}{0}
+  \def\item{\stepcounter{listcount}\origitem}
+  \let\origitem\item
+  \begin{enumerate}\let\item\origitem
+}{
+  \end{enumerate}
+  \ifnum\value{listcount}>4
+    \expandafter\gdef\csname @currentitemlabel\endcsname{\small\csname @currentitemlabel\endcsname}
+    \footnotesize
+  \fi
+}
+
+% 标题、作者等基础设置
 \title{Instrumental Variables}
 \subtitle{Session~1: Foundations and Mechanics}
 \author[Jingxuan Du]{Jingxuan Du\\[4pt]
@@ -24,24 +79,24 @@
 
 \begin{frame}{Three Conditions for a Valid Instrument}
 A valid instrument $Z_i$ must satisfy three conditions:
-\begin{enumerate}
+\begin{autoSizedEnumerate}
   \item \textbf{Relevance (First Stage):} $Z_i$ must be correlated with the
         endogenous treatment $D_i$
-        \begin{itemize}
+        \begin{autoSizedItemize}
           \item Testable: first-stage F-statistic (rule of thumb: $F>10$)
-        \end{itemize}
+        \end{autoSizedItemize}
   \item \textbf{Independence (As-Good-As-Random Assignment):} $Z_i$ must be
         uncorrelated with unobserved confounders $\varepsilon_i$
-        \begin{itemize}
+        \begin{autoSizedItemize}
           \item Not directly testable; requires economic reasoning and
                 robustness checks
-        \end{itemize}
+        \end{autoSizedItemize}
   \item \textbf{Exclusion Restriction:} $Z_i$ affects outcome $Y_i$
         \emph{only} through its effect on $D_i$
-        \begin{itemize}
+        \begin{autoSizedItemize}
           \item No direct effect; testable indirectly via placebo/falsification
-        \end{itemize}
-\end{enumerate}
+        \end{autoSizedItemize}
+\end{autoSizedEnumerate}
 \medskip
 In Session~2 we add a 4th condition: \textbf{Monotonicity} (for the
 LATE interpretation).
@@ -50,25 +105,23 @@ LATE interpretation).
 \begin{frame}{Parameters, Estimands, and Estimators}
 \vspace{-0.2cm}
 Three distinct objects, not always clearly distinguished:
-{\small
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \bgParam{Parameters} come from economic (or other) models of the world
-  \begin{itemize}\itemsep0em
+  \begin{autoSizedItemize}\itemsep0em
     \item E.g.\ a potential-outcome model relating schooling to earnings
     \item They set the \emph{target} for empirical analyses: what we want to know
-  \end{itemize}
+  \end{autoSizedItemize}
   \item \bgEstim{Estimands} are functions of the population data distribution
-  \begin{itemize}\itemsep0em
+  \begin{autoSizedItemize}\itemsep0em
     \item E.g.\ a difference in means or ratio of population regression coefficients
     \item Identification: assumptions that link parameters to estimands
-  \end{itemize}
+  \end{autoSizedItemize}
   \item \bgEstor{Estimators} are functions of observed (sample) data
-  \begin{itemize}\itemsep0em
+  \begin{autoSizedItemize}\itemsep0em
     \item E.g.\ a sample ratio of OLS coefficients
     \item Estimators are random variables; statistical inference studies their distribution
-  \end{itemize}
-\end{itemize}
-}
+  \end{autoSizedItemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{The Lay of the Land}
@@ -105,11 +158,11 @@ In large samples, OLS converges to:
 \pictonBlue{\beta^{OLS}} = \violetRed{\beta} +
   \frac{Cov(\varepsilon_i,D_i)}{Var(D_i)}
 \]
-\begin{itemize}
+\begin{autoSizedItemize}
   \item OLS identifies $\violetRed{\beta}$ \emph{only if} $Cov(\varepsilon_i,D_i)=0$
   \item \textbf{Selection bias}: units with higher/lower $\varepsilon_i$ select into
         treatment, so $Cov(\varepsilon_i,D_i)\ne0$
-\end{itemize}
+\end{autoSizedItemize}
 
 \smallskip
 \textbf{Causal diagram (endogeneity):}
@@ -127,11 +180,11 @@ In large samples, OLS converges to:
 
 \begin{frame}{The IV Solution}
 Suppose $Z_i\in\{0,1\}$ is a binary instrument (e.g.\ lottery assignment).
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Randomness}: $Cov(Z_i,\varepsilon_i)=0$
         (no direct link to unobservables)
   \item \textbf{Exclusion}: $Z_i$ affects $Y_i$ only through $D_i$
-\end{itemize}
+\end{autoSizedItemize}
 \bigskip
 Plugging in $\varepsilon_i=Y_i-\violetRed{\beta}D_i$:
 \[
@@ -175,11 +228,11 @@ Y_i &= \kappa + \pictonBlue{\rho}\,Z_i + \nu_i
 D_i &= \mu  + \pictonBlue{\pi}\,Z_i + \eta_i
     \quad \text{(``first stage'')}
 \end{align*}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item The \textbf{first stage} shows how strongly $Z_i$ moves $D_i$
   \item The \textbf{reduced form} shows the net effect of $Z_i$ on $Y_i$
   \item IV scales the reduced form by the first stage to recover $\violetRed{\beta}$
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Adding Controls}
@@ -189,24 +242,24 @@ add them to both equations:
 Y_i &= \kappa + \rho Z_i + W_i^\prime\phi  + \nu_i \\
 D_i &= \mu  + \pi Z_i  + W_i^\prime\psi + \eta_i
 \end{align*}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item The Frisch-Waugh-Lovell theorem tells us the effective instrument is
         now $\tilde{Z}_i$: the residuals from regressing $Z_i$ on $W_i$
   \item If $W_i$ is a set of randomization-strata dummies, $\tilde{Z}_i$
         captures within-strata variation in $Z_i$
   \item Key: controls should be chosen on substantive grounds, not to
         maximize the first-stage F-statistic
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Classic Example: Angrist (1990) Vietnam Draft Lottery}
 Angrist (1990, AER) estimated the earnings effect of military service using
 Vietnam-era draft-eligibility as an instrument.
-\begin{itemize}
+\begin{autoSizedItemize}
   \item $Z_i\in\{0,1\}$: randomly assigned draft eligibility (lottery number)
   \item $D_i\in\{0,1\}$: actual military service
   \item $Y_i$: later-life earnings
-\end{itemize}
+\end{autoSizedItemize}
 \medskip
 With binary $Z_i$, the IV estimand simplifies to the \textbf{Wald estimand}:
 \[
@@ -214,13 +267,13 @@ With binary $Z_i$, the IV estimand simplifies to the \textbf{Wald estimand}:
   = \frac{E[Y_i\mid Z_i=1]-E[Y_i\mid Z_i=0]}
          {E[D_i\mid Z_i=1]-E[D_i\mid Z_i=0]}
 \]
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Numerator: earnings effect of draft eligibility (reduced form)
   \item Denominator: effect of eligibility on actual service probability
         (first stage)
   \item Finding: military service reduces early-career earnings by
         $\approx 15\%$
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 %=============================================================
@@ -236,30 +289,30 @@ Cov(\tilde{Z}_i,Y_i-X_i^\prime\beta)=0
 =\underbrace{Cov(\tilde{Z}_i,X_i^\prime)}_{L\times J}
 \underbrace{\beta}_{J\times 1}
 \]
-\begin{itemize}
+\begin{autoSizedItemize}
   \item We have more moment conditions than parameters
   \item Any full-rank $J\times L$ matrix $M$ gives a valid IV estimator:\\
         $\beta^{IV}(M)=\bigl(M\,Cov(\tilde{Z}_i,X_i^\prime)\bigr)^{-1}
         M\,Cov(\tilde{Z}_i,Y_i)$
   \item Choice of $M$ trades off efficiency vs.\ interpretability
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Two-Stage Least Squares (2SLS)}
 2SLS chooses $M^\prime=\pi$ (the matrix of first-stage coefficients):
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Effective instrument: $\tilde{Z}_i^*=\tilde{Z}_i^\prime\pi$
         (residualized first-stage fitted values)
   \item Combine instruments according to their predictive power for $X_i$
         $\Rightarrow$ minimizes the 2SLS standard error
-\end{itemize}
+\end{autoSizedItemize}
 \medskip
 \textbf{Two-stage interpretation:}
-\begin{enumerate}
+\begin{autoSizedEnumerate}
   \item \emph{First stage}: regress $X_i$ on $Z_i$ and $W_i$; save fitted values
         $\hat{X}_i$
   \item \emph{Second stage}: regress $Y_i$ on $\hat{X}_i$ and $W_i$
-\end{enumerate}
+\end{autoSizedEnumerate}
 \begin{alertblock}{Practical warning}
 Never run 2SLS by hand---the second-stage standard errors are wrong.
 Use \texttt{ivreg2} (Stata) or \texttt{AER::ivreg()} / \texttt{fixest::feols()} (R).
@@ -275,7 +328,7 @@ weighted-average representation:
 \omega_\ell = \frac{\pi_\ell^2 Var(\tilde{Z}_{i\ell})}
                    {\sum_{\ell^\prime}\pi_{\ell^\prime}^2 Var(\tilde{Z}_{i\ell^\prime})}
 \]
-\begin{itemize}
+\begin{autoSizedItemize}
   \item $\beta_\ell^{IV}=\rho_\ell/\pi_\ell$ is the just-identified IV estimate
         using instrument $\ell$ alone
   \item Weights $\omega_\ell$ are proportional to each instrument's contribution
@@ -283,27 +336,27 @@ weighted-average representation:
   \item Instruments with stronger first stages receive larger weights
   \item This ``visual IV'' representation (slope of $\rho_\ell$ on $\pi_\ell$)
         is also useful for diagnosis
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Overidentification Tests}
 Under the \emph{constant-effects} model, all just-identified IVs identify the
 same $\beta$:
-\begin{itemize}
+\begin{autoSizedItemize}
   \item If $\beta_\ell^{IV}$ differ significantly across instruments, something
         is wrong
   \item The Sargan--Hansen statistic tests $H_0: \beta_\ell^{IV}=\beta$ for
         all $\ell$; asymptotically $\chi^2(L-J)$ under the null
-\end{itemize}
+\end{autoSizedItemize}
 \medskip
 \textbf{Cautions:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Low power when individual $\hat\beta_\ell^{IV}$ are noisy
   \item Rejection does \emph{not} tell you which instrument is invalid
   \item Under \emph{heterogeneous} effects (Session~2), two valid IVs can
         legitimately have different estimands; the test is not interpretable
   \item Use the test as one input among many, not as a pass/fail criterion
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 %=============================================================
@@ -312,23 +365,23 @@ same $\beta$:
 
 \begin{frame}{Weak Instruments}
 If $\pi$ is small relative to its standard error, the instrument is ``weak'':
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Rule of thumb: first-stage $F<10$ signals potential weakness
         (Staiger and Stock, 1997)
   \item \textbf{Bias}: 2SLS is biased toward OLS in small samples;
         the bias is proportional to $1/F$ approximately
   \item \textbf{Size distortion}: standard confidence intervals may
         under-cover in finite samples
-\end{itemize}
+\end{autoSizedItemize}
 \medskip
 \textbf{Modern guidance (Angrist and Koles\'ar 2022):}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item In the just-identified case, 2SLS is \emph{median-unbiased}; the
         SE increase tends to ``cover up'' the bias
   \item Use \texttt{weakivtest} (Stata; Montiel Olea and Pflueger 2015)
         for more nuanced critical values
   \item If $F$ is small: consider Anderson--Rubin or JIVE as robust alternatives
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Weak Instruments: Monte Carlo}
@@ -355,14 +408,14 @@ With a very weak instrument, $\hat\beta^{IV}$ converges to $\hat\beta^{OLS}$.
 
 \begin{frame}{Many-IV Bias}
 Overidentified 2SLS faces an additional problem when there are many weak instruments:
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Symptom}: low first-stage F even though SEs are small (more IVs
         $\Rightarrow$ richer first stage $\Rightarrow$ better fit of $D_i$)
   \item \textbf{Mechanism}: overfitting the first stage essentially recreates
         the endogenous variation in $D_i$, biasing 2SLS toward OLS
   \item \textbf{Historical case}: Angrist--Krueger (1991) QoB IV interacted with
         state $\times$ year fixed effects created hundreds of instruments
-\end{itemize}
+\end{autoSizedItemize}
 \medskip
 \textbf{Visualized --- 100 replications:}
 \begin{columns}[t]
@@ -377,24 +430,24 @@ Overidentified 2SLS faces an additional problem when there are many weak instrum
 
 \begin{frame}{Practical Guidance on Instrument Strength}
 \textbf{Prevention:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Prefer parsimonious instrument sets; avoid mechanical many-IV settings
   \item If using a Bartik/shift-share IV with many industries, the
         \emph{effective} number of instruments is the number of industries
         (addressed in Session~2)
-\end{itemize}
+\end{autoSizedItemize}
 \textbf{Diagnosis:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Report first-stage F-statistic (or Kleibergen--Paap for clustered SEs)
   \item Use \code{weakivtest} in Stata for heteroskedasticity-robust critical values
   \item See also Lee et al.\ (2020) for $t$-ratio-based inference
-\end{itemize}
+\end{autoSizedItemize}
 \textbf{If the instrument is weak:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Try a more informative functional form for $Z_i$
   \item Collapse to fewer instruments
   \item Use Anderson--Rubin confidence sets (valid regardless of strength)
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 %=============================================================
@@ -402,31 +455,29 @@ Overidentified 2SLS faces an additional problem when there are many weak instrum
 %=============================================================
 
 \begin{frame}{Session 1 Applications: Four Classic IV Papers}
-{\small
 We study four highly cited papers illustrating core IV designs:
 
 \medskip
 \textbf{Decision-maker leniency IV (Western context):}
-\begin{enumerate}
+\begin{autoSizedEnumerate}
   \item \textbf{Maestas, Mullen, and Strand (2013, \emph{AER})}\\
         ``Does Disability Insurance Receipt Discourage Work?''\\
         IV: quasi-randomly assigned SSDI disability examiners.
   \item \textbf{Aizer and Doyle (2015, \emph{QJE})}\\
         ``Juvenile Incarceration, Human Capital, and Future Crime''\\
         IV: randomly assigned juvenile court judges.
-\end{enumerate}
+\end{autoSizedEnumerate}
 
 \medskip
 \textbf{Geographic and historical IV (Chinese context):}
-\begin{enumerate}\setcounter{enumi}{2}
+\begin{autoSizedEnumerate}\setcounter{enumi}{2}
   \item \textbf{Qian (2008, \emph{QJE})}\\
         ``Missing Women and the Price of Tea in China''\\
         IV: county agricultural suitability for tea cultivation.
   \item \textbf{Chen, Kung, and Ma (2020, \emph{QJE})}\\
         ``Long Live Keju!''\\
         IV: historical imperial examination quota allocation.
-\end{enumerate}
-}
+\end{autoSizedEnumerate}
 \end{frame}
 
 % ------ Paper 1: Maestas, Mullen & Strand (2013) ------
@@ -444,7 +495,7 @@ Insurance (SSDI) benefits \emph{cause} a reduction in employment?
 
 \medskip
 \textbf{Context \& motivation:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item SSDI provides income support to workers with disabling conditions;
         by 2010 over 8.2 million Americans received benefits (\$119 billion)
   \item Key policy concern: does SSDI create a ``poverty trap'' by
@@ -452,24 +503,23 @@ Insurance (SSDI) benefits \emph{cause} a reduction in employment?
   \item OLS is severely biased: healthier rejected applicants would work
         anyway; sicker accepted applicants could not work regardless
         (\emph{reverse causality + selection on unobserved health})
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{MMS (2013): Examiner Assignment IV Strategy}
-{\small
 \textbf{The IV:} Randomly assigned disability examiners differ
 systematically in their allowance rates (``leniency''):
-\begin{itemize}
+\begin{autoSizedItemize}
   \item SSDI applications are assigned to examiners quasi-randomly
         within local Disability Determination Services (DDS) offices
   \item Examiners vary substantially in their allowance rates even
         after controlling for case characteristics
   \item An examiner's average grant rate (leave-one-out, in other cases)
         is used as the instrument for the applicant's SSDI receipt
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV validity:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Relevance}: examiner leniency strongly predicts own award
         probability (first-stage $F > 100$)
   \item \textbf{Independence}: assignment is quasi-random within offices
@@ -478,13 +528,12 @@ systematically in their allowance rates (``leniency''):
         SSDI award, not through other channels
   \item \textbf{Monotonicity}: a stricter examiner can only reduce (never
         increase) an applicant's probability of receiving SSDI
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{MMS (2013): Data and Specification}
 \textbf{Data:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Social Security Administration administrative records:
         $\approx$1.5 million SSDI applicants, 1997--2004
   \item \textbf{Treatment}: binary indicator for SSDI award (0/1)
@@ -494,24 +543,23 @@ systematically in their allowance rates (``leniency''):
         (average grant rate of the assigned examiner on all other cases)
   \item \textbf{Strata}: DDS office $\times$ quarter fixed effects
         (controls for within-office assignment patterns)
-\end{itemize}
+\end{autoSizedItemize}
 
 \medskip
 \textbf{Specification:}
 \[
 Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
 \]
-\begin{itemize}
+\begin{autoSizedItemize}
   \item 2SLS using examiner leniency as $Z_i$, conditional on DDS-quarter FEs
   \item Robust to controlling for applicant characteristics (age, diagnosis,
         prior earnings) because assignment is as-good-as-random
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{MMS (2013): Results and Robustness}
-{\small
 \textbf{Key findings:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item SSDI receipt reduces employment by $\approx$\textbf{28 percentage
         points} at ages 45--64 (IV estimate much larger than OLS)
   \item About \textbf{23\%} of marginal SSDI recipients (compliers) could
@@ -519,10 +567,10 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
         examiner assignment
   \item OLS understates the causal effect because rejected applicants
         who remain employed create a spurious positive ``health effect''
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{Robustness and sensitivity:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \emph{Placebo test}: examiner leniency does not predict
         pre-application employment trends (balance on pre-period outcomes)
   \item \emph{Alternative examiner measures}: using quintiles of leniency
@@ -532,14 +580,12 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
   \item \emph{Complier analysis}: marginal recipients are younger, healthier,
         and have higher prior earnings than average recipients, explaining
         why SSDI receipt suppresses their employment substantially
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{MMS (2013): Contribution and IV Lessons}
-{\small
 \textbf{Academic contributions:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item First credible causal estimate of SSDI's effect on employment;
         resolves a long-standing identification debate
   \item Shows SSDI creates work disincentives for a sizeable share of
@@ -547,10 +593,10 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
   \item Introduced the ``examiner leniency'' IV into economics; spawned
         a large literature on disability insurance, screening, and
         physician/administrative judgment
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV methodology lessons:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Random assignment of decision-makers} is a powerful source
         of exogenous variation when direct randomization is infeasible
   \item The \textbf{leave-one-out leniency measure} avoids mechanical
@@ -560,8 +606,7 @@ Y_{it} = \alpha + \beta\,\text{SSDI}_{i} + W_i^\prime\gamma + \varepsilon_i
         by examiner assignment
   \item Strata fixed effects (DDS-quarter) are essential to isolate
         within-office random variation
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 % ------ Paper 2: Aizer & Doyle (2015) ------
@@ -579,31 +624,30 @@ their subsequent criminal activity and human capital?
 
 \medskip
 \textbf{Context \& motivation:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item The US incarcerates approximately 70{,}000 juveniles on any given day;
         recidivism rates are high ($\approx$70\% re-arrested within 3 years)
   \item Policy debate: does incarceration deter future crime (deterrence),
         or does it increase it via criminal networks and disrupted schooling?
   \item OLS is biased: more serious offenders are both more likely to be
         incarcerated \emph{and} more likely to re-offend regardless
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Judge IV Strategy}
-{\small
 \textbf{The IV:} Randomly assigned juvenile court judges vary in their
 propensity to incarcerate:
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Juvenile cases are assigned to judges \emph{randomly} within
         courthouses in Chicago, Illinois
   \item Judges differ substantially in their incarceration rates even
         for similar offense types and defendant characteristics
   \item A judge's leave-one-out incarceration rate on other cases is the
         instrument for whether defendant $i$ is incarcerated
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV validity:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Relevance}: judge leniency strongly predicts incarceration
         (first-stage $F \approx 35$--50)
   \item \textbf{Independence}: assignment is explicitly random within court
@@ -612,13 +656,12 @@ propensity to incarcerate:
         the incarceration decision, not through other channels
   \item \textbf{Monotonicity}: a stricter judge cannot reduce a defendant's
         incarceration probability (one-directional instrument)
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Data and Specification}
 \textbf{Data:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Illinois Juvenile Court data linked to adult criminal records,
         high school graduation records, and mortality data; 1990--2006
   \item $\approx$35{,}000 juvenile cases in Chicago (ages 10--17)
@@ -627,24 +670,23 @@ propensity to incarcerate:
         employment, and earnings in adulthood (ages 25--35)
   \item \textbf{Instrument}: leave-one-out judge incarceration rate
         (within courthouse, controlling for offense type and year)
-\end{itemize}
+\end{autoSizedItemize}
 
 \medskip
 \textbf{Specification:}
 \[
 Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
 \]
-\begin{itemize}
+\begin{autoSizedItemize}
   \item 2SLS using judge leniency as $Z_i$, with courthouse-year-offense
         category fixed effects as strata
   \item Outcomes measured 5--15 years after the juvenile offense
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Results and Robustness}
-{\small
 \textbf{Key findings:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Juvenile incarceration \emph{reduces} high school graduation
         by $\approx$\textbf{13 percentage points}
   \item Juvenile incarceration \emph{increases} adult incarceration
@@ -653,10 +695,10 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
   \item Net cost-benefit analysis: incarceration costs society roughly
         \$1.1--1.4 million per juvenile (present value), far exceeding
         any deterrence benefit
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{Robustness and sensitivity:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \emph{Balance test}: judge leniency is uncorrelated with defendant
         race, prior offenses, and offense severity (random assignment holds)
   \item \emph{Placebo}: judge leniency does not predict pre-offense
@@ -665,14 +707,12 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
         property, and public order offenses
   \item \emph{Bandwidth variation}: narrowing the leave-one-out window
         (same offense type only) gives similar results
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Aizer \& Doyle (2015): Contribution and IV Lessons}
-{\small
 \textbf{Academic contributions:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item First causal evidence that juvenile incarceration \emph{increases}
         adult criminality and reduces human capital---a critical finding for
         criminal justice reform debates
@@ -680,10 +720,10 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
         than reduce criminal behavior through incapacitation effects
   \item Extended the judge-leniency IV approach (Kling 2006) to juvenile
         settings and linked to long-run human capital outcomes
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV methodology lessons:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Judge/examiner leniency IV} is now a standard tool whenever
         administrative decisions are quasi-randomly assigned
   \item Key to validity: \emph{random} (not quasi-random) assignment within
@@ -693,13 +733,11 @@ Y_i = \alpha + \beta\,\text{Incarcerated}_i + W_i^\prime\gamma + \varepsilon_i
         those near the incarceration margin
   \item Long-run outcomes require linking administrative datasets across
         agencies (courts, schools, IRS, corrections)
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Comparing the Two Papers}
 \begin{center}
-\small
 \begin{tabular}{lll}
 \toprule
  & \textbf{MMS (2013)} & \textbf{AD (2015)} \\
@@ -736,31 +774,30 @@ labor reduce female mortality (the ``missing women'' phenomenon)?
 
 \medskip
 \textbf{Context \& motivation:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Amartya Sen (1990): $\approx$100 million ``missing'' women in Asia
         due to son preference, sex-selective abortion, and differential care
   \item China's 1978--79 decollectivization let farmers sell surplus produce;
         crop suitability became critical for household income
   \item OLS is biased: regions with higher female wages may differ in
         institutions, culture, and law enforcement
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Qian (2008): Geographic IV Design}
-{\small
 \textbf{The IV:} County-level agricultural suitability for tea vs.\ orchard
 cultivation (determined by soil acidity, rainfall, and elevation):
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Tea cultivation is female-labor intensive; orchards are male-labor
         intensive---so tea suitability raises relative female wages
   \item Suitability is geographically predetermined and exogenous to
         son-preference norms and government policy
   \item Treatment: post-reform relative female income; Outcome: sex ratio
         at ages 0--5 and girls' survival rates
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV validity:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Relevance}: tea suitability $\times$ post-1978 period
         strongly predicts female-to-male income ratio (first-stage $F > 40$)
   \item \textbf{Independence}: soil/terrain characteristics are not
@@ -768,24 +805,22 @@ cultivation (determined by soil acidity, rainfall, and elevation):
   \item \textbf{Exclusion}: tea suitability affects sex ratios only through
         its effect on relative female income (falsification: no pre-reform
         relationship between tea suitability and sex ratios)
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Qian (2008): Results and IV Lessons}
-{\small
 \textbf{Key findings:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item A 10\% increase in female relative income reduces the sex ratio
         at ages 0--5 by $\approx$2--3\%---significant recovery of missing girls
   \item Effects are driven by increased female survival, not changes in
         sex-selective abortion---consistent with reduced neglect and better care
   \item Results survive controls for pre-existing trends, income levels,
         and province fixed effects
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV methodology lessons:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Geographic/agricultural suitability} (soil, terrain, climate)
         is a classic source of exogenous variation in development economics---
         it directly affects economic activity but is predetermined with respect
@@ -794,8 +829,7 @@ cultivation (determined by soil acidity, rainfall, and elevation):
         counties gain more after 1978, creating cross-sectional IV variation
   \item Falsification: no relationship between tea suitability and pre-reform
         sex ratios confirms the independence assumption
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 % ------ Chinese Paper 4: Chen, Kung, Ma (2020) ------
@@ -813,31 +847,30 @@ cultivation (determined by soil acidity, rainfall, and elevation):
 
 \medskip
 \textbf{Context \& motivation:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item The Keju selected government officials through standardized exams;
         meritocracy incentivized education across the population
   \item Counties differed dramatically in exam-slot quotas due to
         administrative allocation---creating cross-county variation
   \item OLS is biased: counties with more scholars may have had better
         institutions, more resources, or geographic advantages
-\end{itemize}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Chen, Kung \& Ma (2020): Historical Quota IV}
-{\small
 \textbf{The IV:} Imperial-era Keju examination quotas allocated to each
 county by the Qing government based on \emph{tax revenue}:
-\begin{itemize}
+\begin{autoSizedItemize}
   \item Quotas were assigned for fiscal/administrative convenience---not
         educational merit---creating plausibly exogenous variation
   \item Higher quotas $\Rightarrow$ more aspiring candidates $\Rightarrow$
         stronger culture of human capital investment
   \item Treatment: historical Keju scholar density per county;
         Outcomes: modern GDP, education levels, private entrepreneurship
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV validity:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Relevance}: quota allocation strongly predicts scholar
         density (first-stage $F > 50$)
   \item \textbf{Independence}: quotas uncorrelated with modern economic
@@ -846,32 +879,29 @@ county by the Qing government based on \emph{tax revenue}:
   \item \textbf{Exclusion}: quotas affect modern outcomes only through
         cultural/human capital persistence; direct fiscal effects from
         Qing-era quotas have long dissipated
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Chen, Kung \& Ma (2020): Results and IV Lessons}
-{\small
 \textbf{Key findings:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item A 1-SD increase in Keju scholar density raises modern county GDP
         per capita by $\approx$6--8\%
   \item Effects operate through education channels: higher Keju exposure
         $\Rightarrow$ more schools, higher literacy, more private entrepreneurs
   \item Robust to controls for geography, Ming-dynasty institutions,
         province fixed effects, and multiple outcome time periods
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{IV methodology lessons:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item \textbf{Historical administrative records} provide rich sources of
         exogenous variation when modern experimental designs are infeasible
   \item Long-run persistence studies rely heavily on a credible exclusion
         restriction: document and test all plausible alternative channels
   \item The exclusion is bolstered by \emph{mediation analysis}: tracing
         the Keju $\to$ education $\to$ development pathway directly
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 %=============================================================
@@ -879,30 +909,29 @@ county by the Qing government based on \emph{tax revenue}:
 %=============================================================
 
 \begin{frame}{Session 1 Summary}
-{\small
 \textbf{IV Foundations:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item IV validity requires relevance, independence, and exclusion
   \item $\beta^{IV}=\rho/\pi$ (reduced form $\div$ first stage)
   \item With controls: effective instrument $\tilde Z_i$ = residual of
         $Z_i$ on $W_i$ (Frisch--Waugh)
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{2SLS and Overidentification:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item 2SLS = efficiency-optimal combination of multiple instruments
   \item 2SLS = weighted average of just-identified IVs
   \item Sargan--Hansen test: diagnostic, not a ``certification of validity''
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{Instrument Strength:}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item $F>10$ rule of thumb; \texttt{weakivtest} for robust critical values
   \item Many-IV bias: overfitting first stage recreates endogeneity
-\end{itemize}
+\end{autoSizedItemize}
 \smallskip
 \textbf{Applications (Top-5 Journals):}
-\begin{itemize}
+\begin{autoSizedItemize}
   \item MMS (2013, AER): examiner leniency IV $\Rightarrow$ SSDI reduces
         employment by 28pp
   \item Aizer \& Doyle (2015, QJE): judge leniency IV $\Rightarrow$
@@ -911,44 +940,30 @@ county by the Qing government based on \emph{tax revenue}:
         female income gains reduce ``missing women'' in China
   \item Chen, Kung \& Ma (2020, QJE): historical quota IV $\Rightarrow$
         Keju system raises long-run human capital in China
-\end{itemize}
-}
+\end{autoSizedItemize}
 \end{frame}
 
 \begin{frame}{Preview: Session 2}
-\begin{enumerate}
+\begin{autoSizedEnumerate}
   \item \textbf{IV Interpretation (LATE)}
-  \begin{itemize}
+  \begin{autoSizedItemize}
     \item Imbens--Angrist (1994) assumptions: monotonicity, compliers
     \item Characterizing compliers; diff-in-diff IV
-  \end{itemize}
+  \end{autoSizedItemize}
   \medskip
   \item \textbf{Formula Instruments}
-  \begin{itemize}
+  \begin{autoSizedItemize}
     \item Shift-share IV: formal conditions (Borusyak et al.\ 2022)
     \item Recentered IV: beyond shift-share (Borusyak and Hull 2023)
     \item Illustration: China High-Speed Rail market access
-  \end{itemize}
+  \end{autoSizedItemize}
   \medskip
   \item \textbf{Chinese Economic Applications}
-  \begin{itemize}
+  \begin{autoSizedItemize}
     \item Meng, Qian, Yared (2015, \emph{ReStud}): Great Famine IV
     \item Khandelwal, Schott, Wei (2013, \emph{QJE}): WTO quota removal
-  \end{itemize}
-\end{enumerate}
-\end{frame}
-
-\begin{frame}[plain]
-\begin{center}
-\vspace{1cm}
-{\large\color{dufenavy}\textbf{Instrumental Variables --- Session 1}}\\[8pt]
-\rule{0.6\textwidth}{0.5pt}\\[10pt]
-\textbf{Jingxuan Du}\\[4pt]
-Dongbei University of Finance and Economics (DUFE)\\[6pt]
-\texttt{dujingxuan6@dufe.edu.cn}\\[12pt]
-{\color{dufegray}\small Questions welcome via email.\\
-Session 2 slides cover IV interpretation and Chinese applications.}
-\end{center}
+  \end{autoSizedItemize}
+\end{autoSizedEnumerate}
 \end{frame}
 
 \end{document}
