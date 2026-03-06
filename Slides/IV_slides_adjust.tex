@@ -1,53 +1,12 @@
 \documentclass{beamer}
 
-\input{preamble.tex}
+\input{preamble_dufe.tex}
 
 \begin{document}
 
-\imageframe{./lecture_includes/cover.png}
  
 \section{Introductions}
 
-%\subsection{Who Am I?}
-\begin{frame}{Who Am I?}
-
-A Professor of Economics at Brown University\pause
-
-A big fan of instrumental variable (IV) methods\pause
-\begin{itemize}
-  \item Lottery- and non-lottery IVs in studies of educational quality \\ {\scriptsize \textcolor{red!75!green!50!blue!25!gray}{(Angrist et al. 2016, 2017, 2021, 2022, 2024, 2025; Abdulkadiro\u{g}lu et al. 2016)}}
-  \item Quasi-experimental evaluations of healthcare quality \\ {\scriptsize \textcolor{red!75!green!50!blue!25!gray}{(Hull 2020; Abaluck et al. 2021, 2022)}}
-  \item IV-based analyses of discrimination and bias \\ {\scriptsize \textcolor{red!75!green!50!blue!25!gray}{(Arnold et al. 2020, 2021, 2022, 2025; Hull 2021; Baron et al. 2024; Bohren et al. 2025)}}
-  \item Shift-share instruments and related designs \\ {\scriptsize \textcolor{red!75!green!50!blue!25!gray}{(Borusyak et al. 2022, 2025; Borusyak and Hull 2023, 2025; Goldsmith-Pinkham et al. 2022)}}
-\end{itemize}\pause
-
-A constant student of IV (and applied econometrics generally)
-
-\end{frame}
-
-%\subsection{What is This Course?}
-\begin{frame}{What is This Course?}
-
-A two-day intensive on IV, focusing on practical takeaways \pause
-
-\begin{itemize}
-  \item Far from comprehensive --- see other ``mixtape tracks'' that take deeper dives on particular topics (judge IV, shift-share, etc)
-  \item Emphasis on \emph{practical}: IV is meant to be used, not just studied!
-\end{itemize}\pause\medskip
-
-Five hours of lecture, from IV basics to recent advances
-
-\begin{itemize}
-  \item Please ask questions in the Discord chat!
-  \item I will try to stick to the schedule but may improvise slightly
-\end{itemize}\pause\medskip
-
-A take-home coding lab, to apply what we've learned
-\begin{itemize}
-  \item 20 min of me live-coding solutions in Stata (we will also post R code)
-\end{itemize}
-
-\end{frame}
 
 \begin{frame}
 \includegraphics[scale=0.65]{./lecture_includes/schedule.png}
@@ -723,123 +682,9 @@ Logic also goes through with continuous instruments\smallskip
 
 \end{frame}
 
-\subsection{Diff-in-Diff and IV}
-
-\begin{frame}{What about Diff-in-Diff?}
-Most LATE-style discussions of IV identification are ``design-based'': \\ i.e., the instrument is assumed to be drawn randomly, as if in an RCT 
-\begin{itemize}
-\item But not all instruments are easily thought of this way (e.g. distance)
-\end{itemize}\medskip\pause{}
-
-Luckily, whenever you have a reduced form \& first stage that are causal and exclusion+monotonicity hold, the IV ratio has a LATE interpretation
-\begin{itemize}
-\item E.g. diff-in-diff IV, for distance measure $Z_i\in\{0,1\}$ and $t\in\{1,2\}$:
-\vspace{-0.4cm}
-\begin{align*}
-Y_{it}&=\alpha_i + \tau_t + \beta D_{it} + \epsilon_{it} \\
-D_{it}&=\mu_i + \lambda_t + \pi Z_{i}\times\mathbf{1}[t=2] + \epsilon_{it}
-\end{align*}
-\vspace{-1cm}
-
-Parallel trends in $Z_i$ make the reduced form \& first stage causal\pause{}
-\item Recent TWFE literature becomes relevant with fancier specifications
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Example: Duflo (2001) School-Building Diff-in-Diff}
-\begin{center}
-	\includegraphics[width=1\textwidth]{./lecture_includes/duflo_2001.png}
-\end{center}
-Here $Z_i=$ growing up in a region with intensive school building
-\end{frame}
-\section{Formula Instruments}
-
-\begin{frame}{Exogenous Shocks with Non-Random Exposure}
-Increasingly, researchers construct instruments from multiple sources of variation --- only some of which is viewed as exogenous. E.g.:
-\begin{itemize}
-\item Shift-share instruments $Z_i=\sum_k s_{ik}g_k$, which average together a set of shocks $g_k$ with predetermined exposure shares $s_{ik}$
-\item IVs capturing spillovers across social networks/geographies 
-\item ``Simulated'' instruments, capturing eligibility for a public program
-\end{itemize}\medskip\pause{}
-
-Generically, $Z_i=f_i(g,s)$ where $g=(g_1,\dots,g_k)$ is a set of shocks, $s$ is some measure of shock exposure, and $f_i(\cdot)$ is a known formula
-\begin{itemize}
-\item How can we leverage exogeneity in $g$, allowing $s$ to be non-random?
-\end{itemize}
-
-\end{frame}
-
-\subsection{Shift-Share IV}
-
-\begin{frame}{Example: Autor, Dorn, and Hanson (2014)}
-ADH study the effects of rising Chinese import competition on US commuting zones in the 1990's and 2000's
-\begin{itemize}
-\item Treatment $X_{i}$: growth of Chinese imports in CZ $i$
-\item Main outcome $Y_{i}$: change in manufacturing employment in CZ $i$
-\end{itemize}\medskip\pause{}
-
-They use a shift-share instrument $Z_{i}=\sum_k s_{ik}g_{k}$, where:
-\begin{itemize}
-\item Shocks $g_k$: industry $k$'s Chinese import growth in non-US economies
-\item Shares $s_{ik}$: pre-period employment share of industry $k$ in CZ $i$
-\end{itemize}\medskip\pause{}
-
-Idea: $Z_i$ predicts $X_i$ with proxies for underlying productivity shocks  
-\begin{itemize}
-\item Fairly intuitive ... but what do we need for it to work? 
-\end{itemize}
-\end{frame}
-
-\begin{frame}{SSIV with Exogneous Shocks}
-
-Borusyak, Hull, and Jaravel (2022) show shift-share IV can work when
-\begin{itemize}
-\item The shocks $g_k$ are exogenous, at least conditional on some $q_k$
-\item There is enough independent variation in the shocks (i.e. large $K$)
-\end{itemize}\bigskip\pause{}
-
-Intuitively, $Z_i=\sum_k s_{ik}g_{k}$ works as a ``translation device,'' bringing the $k$-level variation to bear on causal effects at the $i$ level
-\begin{itemize}
-\item E.g. in Autor et al. (2014), an industry-level natural experiment can be used to estimate effects at the commuting zone level
-\item The shares $s_{ik}$ used for this translation do not need to be exogenous!
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Two Practical Considerations}
-
-Need to control for $E[Z_i\mid s,q]=E[\sum_k s_{ik}g_{k}\mid s,q]=\sum_k s_{ik}E[g_k\mid q]$ \\ in order to isolate the as-good-as-random variation in shocks
-\begin{itemize}
-\item When $E[g_k\mid q]=q_k^\prime\gamma$, this means controlling for $\sum_k s_{ik}q_k$ 
-\item E.g. in Autor et al. (2014), to isolate within-period shock variation, need to control for $\sum_k s_{ik}\times (\text{period FE})$
-\end{itemize}\bigskip\pause{}
-
-Need to adjust SEs for a non-standard clustering: $Z_i=\sum_k s_{ik}g_k$ and $Z_j=\sum_k s_{jk} g_k$ are correlated via their common exposure to shocks
-\begin{itemize}
-\item Easy fix: use the \emph{ssaggregate} Stata/R packages to translate SSIV estimation to the level of identifying variation (shocks)
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Estimating Exogenous-Shock SSIV Regressions in Stata}
-\vspace{-0.3cm}
-\begin{center}
-\includegraphics[scale=0.27]{./lecture_includes/ssaggregate.png}
-\end{center}
-To install: \code{ssc install ssaggregate}
-\end{frame}
-
-\begin{frame}{Autor et al. (2014) Revisited}
-\begin{center}
-\includegraphics[scale=0.52]{./lecture_includes/adh_bhj_restud.png}
-\end{center}
-\begin{itemize}
-\item Columns 3-7 include the key  $\sum_k s_{ik}\times (\text{period FE})$ control
-\item Standard errors / first stage F-stat.'s computed via \emph{ssaggregate}
-\end{itemize}
-\end{frame}
 
 \subsection{Recentered IV}
-\begin{frame}{Beyond Shift-Share}
+\begin{frame}{Recentered IV}
 
 Suppose we wanted to estimate the economic impact of new transportation upgrades (e.g. new high speed rail construction)
 \begin{itemize}
@@ -947,29 +792,9 @@ Ex: Medicaid eligibility s a treatment combining statewide policy shocks and ind
 
 \end{frame}
 
-\begin{frame}{Concluding Thoughts}
 
-We've covered a ton of ground in two days! 
-\begin{itemize}
-\item From basic IV mechanics to advanced recentering techniques
-\end{itemize}\bigskip\pause{}
-
-Some general advice on how to approch IV in the ``real world'':
-\begin{enumerate}
-\item Figure out what the reduced form and first stage regressions are, \\ \& what variation in the instrument(s) they leverage via the controls
-\item Assess the plausibility of as-good-as-random assignment (or parallel trends) of this variation, both theoretically and empirically
-\item Interrogate exclusion, which lets you interpret RF/FS, and monotonicity/complier stats if heterogeneous FX seem important
-\end{enumerate}
-\end{frame}
-
-\begin{frame}{Keep Calm and \code{ivreg2} On!}
-
-\begin{center}
-Thank you, and good luck on your future adventures with IV!
-
-\bigskip
-\url{peter_hull@brown.edu}
 
 \end{center}
 \end{frame}
 \end{document}
+
