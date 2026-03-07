@@ -7,10 +7,11 @@
 \imageframe{./lecture_includes/cover.png}
  
 \section{Introductions}
+\imageframe{./lecture_includes/cover_intro.png}
 
 %\subsection{Who Am I?}
 \begin{frame}{Who Am I?}
-
+{\small
 A Professor of Economics at Brown University\pause
 
 A big fan of instrumental variable (IV) methods\pause
@@ -22,7 +23,7 @@ A big fan of instrumental variable (IV) methods\pause
 \end{itemize}\pause
 
 A constant student of IV (and applied econometrics generally)
-
+}
 \end{frame}
 
 %\subsection{What is This Course?}
@@ -50,21 +51,24 @@ A take-home coding lab, to apply what we've learned
 \end{frame}
 
 \begin{frame}
-\includegraphics[scale=0.65]{./lecture_includes/schedule.png}
+\begin{center}
+\includegraphics[width=\textwidth, height=0.85\textheight, keepaspectratio]{./lecture_includes/schedule.png}
+\end{center}
 \end{frame}
 
 \section{IV Mechanics}
+\imageframe{./lecture_includes/cover_understanding.png}
 
 \subsection{Just-Identified IV}
 
 \begin{frame}{Preliminaries: Parameters, Estimands, and Estimators}
-\vspace{-0.2cm}
+\vspace{-0.3cm}
 Three distinct objects, not always clearly distinguished: \pause
 {\small
-\begin{itemize}
+\begin{itemize}\itemsep0em
   \item \bgVioletRed{Parameters} come from economic (or other) models of the world
   \begin{itemize}\itemsep0em
-    \item E.g. a ``structural'' model of supply and demand, or a potential outcome model relating schooling to earnings
+    \item E.g. a ``structural'' model of supply/demand, or a potential outcome model linking schooling to earnings
     \item They set the target for empirical analyses: what we want to know
   \end{itemize}\pause
   
@@ -78,7 +82,7 @@ Three distinct objects, not always clearly distinguished: \pause
   \begin{itemize}\itemsep0em
     \item E.g. a difference in sample means or ratio of OLS coefficients 
     \item Since data are random, so are estimators. Each has a distribution
-    \item We Use knowledge of estimator distributions to learn about estimands (inference) and thus identified parameters
+    \item Use estimator distributions to learn about estimands (inference)
   \end{itemize}
 \end{itemize}
 }
@@ -105,11 +109,11 @@ Three distinct objects, not always clearly distinguished: \pause
     \end{tikzpicture}
   \end{adjustbox}
 
-  \vspace{10mm}
-  Separating out the very different tasks of identification and inference can help make our lives easier\smallskip\pause{}
+  \vspace{4mm}
+  {\small Separating out the very different tasks of identification and inference can help make our lives easier\smallskip\pause{}
 \begin{itemize}
 \item Today we'll start with the mechanics of IV estimands, talk briefly about estimation, then spend some time talking about identification
-\end{itemize}
+\end{itemize}}
 \end{frame}
 
 \begin{frame}{An Example}
@@ -242,6 +246,35 @@ IV interprets the latter causal effect in terms of the former
 
 \imageframe{./lecture_includes/angrist_1990.png}
 
+\begin{frame}{Angrist (1990): IV Specification}
+{\small
+\textbf{Setting:} Vietnam-era draft eligibility as IV for military service effects on earnings.\medskip
+
+\textbf{First Stage} (eligibility $\to$ military service):
+\vspace{-0.3cm}
+\begin{align*}
+D_i &= \mu + \pi \cdot Z_i + \eta_i
+\end{align*}
+\vspace{-0.5cm}
+where $Z_i \in \{0,1\}$ = draft eligibility (lottery), $D_i \in \{0,1\}$ = actual military service.\medskip
+
+\textbf{Reduced Form} (eligibility $\to$ earnings):
+\vspace{-0.3cm}
+\begin{align*}
+Y_i &= \kappa + \rho \cdot Z_i + \nu_i
+\end{align*}
+\vspace{-0.5cm}
+where $Y_i$ = annual earnings (measured 1971, 1981, 1984).\medskip
+
+\textbf{IV Estimate} (Wald):
+\vspace{-0.3cm}
+\begin{align*}
+\hat{\beta}^{IV} = \frac{\hat{\rho}}{\hat{\pi}} = \frac{E[Y_i \mid Z_i=1]-E[Y_i \mid Z_i=0]}{E[D_i \mid Z_i=1]-E[D_i \mid Z_i=0]}
+\end{align*}
+}
+{\scriptsize \textcolor{asher}{\href{https://www.jstor.org/stable/2006669}{Angrist (1990), ``Lifetime Earnings and the Vietnam Era Draft Lottery,'' \emph{AER} 80(3)}}}
+\end{frame}
+
 \begin{frame}{Adding Controls}
 
 We might only think our $Z_i$ is exogenous controlling for some vector $W_i$
@@ -324,9 +357,33 @@ Note: here we're talking about the 2SLS \emph{estimand}, but the exact same logi
 
 \begin{frame}{Angrist-Krueger '91: The Power of Overidentification}
 
-\includegraphics[scale=0.5]{./lecture_includes/ak_table.png}
+\begin{center}
+\includegraphics[width=0.85\textwidth, keepaspectratio]{./lecture_includes/ak_table.png}
+\end{center}
 
+\end{frame}
 
+\begin{frame}{Angrist-Krueger (1991): IV Specification}
+{\small
+\textbf{Setting:} Quarter of birth (QOB) as IV for schooling effects on earnings.\smallskip
+
+\textbf{Instrument:} $Z_{iq} \in \{0,1\}$ = born in quarter $q$. Compulsory attendance laws force Q1 students to stay in school longer before dropping out.\smallskip
+
+\textbf{First Stage} (QOB $\to$ years of schooling):
+\vspace{-0.4cm}
+\begin{align*}
+S_i = \mu + \sum_{q=2}^{4} \pi_q \cdot Z_{iq} + W_i'\psi + \eta_i
+\end{align*}
+\vspace{-0.6cm}
+\textbf{Reduced Form} (QOB $\to$ log weekly wages):
+\vspace{-0.4cm}
+\begin{align*}
+Y_i = \kappa + \sum_{q=2}^{4} \rho_q \cdot Z_{iq} + W_i'\phi + \nu_i
+\end{align*}
+\vspace{-0.6cm}
+\textbf{2SLS:} $\hat{\beta}^{2SLS}$ from overidentified system (up to 30 QOB$\times$YOB instruments)
+}\\[0.1em]
+{\scriptsize \textcolor{asher}{\href{https://academic.oup.com/qje/article/106/4/979/1917545}{Angrist \& Krueger (1991), ``Does Compulsory School Attendance Affect Schooling and Earnings?'' \emph{QJE} 106(4)}}}
 \end{frame}
 
 \begin{frame}{2SLS is a Many-Splendored Thing}
@@ -402,7 +459,7 @@ Much has been made of this over the years, but Angrist and Koles\'{a}r (2022) sh
 \vspace{-0.2cm}
 Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=Var(\varepsilon_i)=Var(\eta_i)=1$
 \begin{center}
-\includegraphics[scale=0.45]{./lecture_includes/strongpi.png}
+\includegraphics[width=0.75\textwidth, keepaspectratio]{./lecture_includes/strongpi.png}
 \end{center}
 
 \end{frame}
@@ -411,7 +468,7 @@ Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=Var(\v
 \vspace{-0.2cm}
 Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=0.1$ (Weaker)
 \begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/medpi.png}
+\includegraphics[scale=0.32]{./lecture_includes/medpi.png}
 \end{center}
 
 \end{frame}
@@ -420,7 +477,7 @@ Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=0.1$ (
 \vspace{-0.2cm}
 Monte Carlo: $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_i+\eta_i$: $\pi=0.01$ (Very Weak)
 \begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/weakpi.png}
+\includegraphics[scale=0.32]{./lecture_includes/weakpi.png}
 \end{center}
 
 \end{frame}
@@ -452,7 +509,7 @@ lurking in other settings with constructed instruments (e.g. judge IV)
 \vspace{-0.2cm}
 $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}+\eta_i$: IV w/ $Z_{i1}$ only
 \begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/fewz.png}
+\includegraphics[width=0.75\textwidth, keepaspectratio]{./lecture_includes/fewz.png}
 \end{center}
 
 \end{frame}
@@ -461,7 +518,7 @@ $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}
 \vspace{-0.2cm}
 $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}+\eta_i$: IV w/ $Z_{i1},\dots,Z_{i10}$
 \begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/somez.png}
+\includegraphics[width=0.75\textwidth, keepaspectratio]{./lecture_includes/somez.png}
 \end{center}
 
 \end{frame}
@@ -470,18 +527,18 @@ $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}
 \vspace{-0.2cm}
 $Y_i=0\cdot D_i + \varepsilon_i$, $D_i=\pi Z_{i1}+\sum_{\ell>1} 0\cdot Z_{i\ell}+\eta_i$: IV w/ $Z_{i1},\dots,Z_{i100}$
 \begin{center}
-\includegraphics[scale=0.35]{./lecture_includes/manyz.png}
+\includegraphics[width=0.75\textwidth, keepaspectratio]{./lecture_includes/manyz.png}
 \end{center}
 
 \end{frame}
 
 \begin{frame}{What to Do?}
 \vspace{-0.2cm}
-Aim for few instruments, and check your F's after every \emph{ivreg}\smallskip
+{\small Aim for few instruments, and check your F's after every \emph{ivreg}\smallskip
 \begin{itemize}
 \item State of the art: Montiel Olea and Pflueger '15; \code{weakivtest} in Stata\smallskip
 \item Staiger-Stock rule-of-thumb ($F>10$) still seems widely held\smallskip
-\item See Lee et al. (2020) and Keane and Neal (2022) for some discussions of additional subtleties
+\item See Lee et al. (2020) and Keane and Neal (2022) for additional subtleties
 \end{itemize}
 \medskip\pause{}
 
@@ -492,11 +549,66 @@ If your F is small, some things to consider:\smallskip
 \item Does changing the covariate set help? (note: beware invalidity!)\smallskip
 \item Check results w/a more robust approach (e.g. Anderson-Rubin, JIVE)
 \end{itemize}
+}
+\end{frame}
 
+\subsection{Stata Implementation}
 
+\begin{frame}{Key Stata Packages for IV Estimation}
+\vspace{-0.2cm}
+{\small Four essential packages to install before running any IV regression:\medskip
+
+\begin{tabular}{lll}
+\hline
+\textbf{Package} & \textbf{Purpose} & \textbf{Install Command} \\
+\hline
+\code{ivreg2} & Standard 2SLS/LIML & \code{ssc install ivreg2} \\
+\code{ivreghdfe} & 2SLS with HD fixed effects & \code{ssc install ivreghdfe} \\
+\code{ranktest} & Rank condition tests & \code{ssc install ranktest} \\
+\code{weakivtest} & Robust weak IV test & \code{ssc install weakivtest} \\
+\code{ssaggregate} & Shift-share aggregation & \code{ssc install ssaggregate} \\
+\code{boottest} & Wild score bootstrap & \code{ssc install boottest} \\
+\hline
+\end{tabular}\medskip
+
+\textbf{Dependencies:} \code{ivreghdfe} requires \code{hdfe} and \code{ftools}:\smallskip
+
+\hspace{1em}\code{ssc install ftools}
+
+\hspace{1em}\code{ssc install hdfe}
+
+\hspace{1em}\code{ssc install ivreghdfe}
+}
+\end{frame}
+
+\begin{frame}{Stata IV Workflow: A Quick Reference}
+\vspace{-0.2cm}
+{\small
+\textbf{Step 1 --- Basic 2SLS} (\code{ivreg2}):\smallskip
+
+\hspace{1em}\code{ivreg2 y \sun{covs} (\electricViolet{endo} = \pictonBlue{inst}), robust first}
+
+\vspace{-0.2cm}
+Options: \code{robust} (HC1 SE), \code{first} (print first stage), \code{savefirst}\medskip
+
+\textbf{Step 2 --- With High-Dimensional FE} (\code{ivreghdfe}):\smallskip
+
+\hspace{1em}\code{ivreghdfe y \sun{covs} (\electricViolet{endo} = \pictonBlue{inst}), robust absorb(\textit{fes})}\medskip
+
+\textbf{Step 3 --- Weak Instrument Test} (after \code{ivreg2}):\smallskip
+
+\hspace{1em}\code{weakivtest}\quad (Montiel Olea--Pflueger effective F-statistic)\medskip
+
+\textbf{Step 4 --- Shift-Share IV} (\code{ssaggregate}):\smallskip
+
+\hspace{1em}\code{ssaggregate y endo (inst = shock), n(ind) s(share)}
+
+\hspace{1em}\code{ivreg2 y (endo = inst), robust}
+}
 \end{frame}
 
 \section{IV Interpretation}
+\imageframe{./lecture_includes/cover_hetero.png}
 
 \subsection{LATE and Generalizations}
 
@@ -660,8 +772,8 @@ shows that charter compliers have typical counterfactual achievement
 \end{frame}
 
 
-\vspace{-0.5cm}
 \begin{frame}{Covariates}
+\vspace{-0.2cm}
 For covariates $X_i$ (not affected by $D_i$) we can follow a similar trick:
 \begin{itemize}
 \item Either IV'ing $X_iD_i$ on $D_i$ or IV'ing $X_i(1-D_i)$ on $1-D_i$ identifies complier characteristics $E[X_i\mid D_i(1)>D_i(0)]$\smallskip
@@ -748,11 +860,35 @@ Parallel trends in $Z_i$ make the reduced form \& first stage causal\pause{}
 
 \begin{frame}{Example: Duflo (2001) School-Building Diff-in-Diff}
 \begin{center}
-	\includegraphics[width=1\textwidth]{./lecture_includes/duflo_2001.png}
+	\includegraphics[width=0.9\textwidth, keepaspectratio]{./lecture_includes/duflo_2001.png}
 \end{center}
-Here $Z_i=$ growing up in a region with intensive school building
+{\small Here $Z_i=$ growing up in a region with intensive school building}
+\end{frame}
+
+\begin{frame}{Duflo (2001): IV Specification}
+{\small
+\textbf{Setting:} Indonesia's 1973--79 school construction program (INPRES): 61,000+ schools built, intensity varied by region. Instrument for schooling effects on wages.\medskip
+
+\textbf{DiD First Stage} (program intensity $\to$ schooling):
+\vspace{-0.3cm}
+\begin{align*}
+S_{ic} = \alpha_c + \lambda_t + \pi \cdot \underbrace{(P_c \times \mathbf{1}[\text{young}_{it}])}_{Z_{ic}} + W_{ic}'\psi + \eta_{ic}
+\end{align*}
+\vspace{-0.5cm}
+where $P_c$ = schools built per 1000 children in region $c$, ``young'' = cohort exposed to program.\medskip
+
+\textbf{DiD Reduced Form} (program $\to$ log wages):
+\vspace{-0.3cm}
+\begin{align*}
+Y_{ic} = \kappa_c + \tau_t + \rho \cdot (P_c \times \mathbf{1}[\text{young}_{ic}]) + W_{ic}'\phi + \nu_{ic}
+\end{align*}
+\vspace{-0.5cm}
+\textbf{IV Estimate:} $\hat{\beta}^{IV} = \hat{\rho}/\hat{\pi}$ = return to one additional year of schooling
+}
+{\scriptsize \textcolor{asher}{\href{https://www.aeaweb.org/articles?id=10.1257/aer.91.4.795}{Duflo (2001), ``Schooling and Labor Market Consequences of School Construction in Indonesia,'' \emph{AER} 91(4)}}}
 \end{frame}
 \section{Formula Instruments}
+\imageframe{./lecture_includes/cover_frontiers.png}
 
 \begin{frame}{Exogenous Shocks with Non-Random Exposure}
 Increasingly, researchers construct instruments from multiple sources of variation --- only some of which is viewed as exogenous. E.g.:
@@ -788,6 +924,31 @@ Idea: $Z_i$ predicts $X_i$ with proxies for underlying productivity shocks
 \begin{itemize}
 \item Fairly intuitive ... but what do we need for it to work? 
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Autor, Dorn, and Hanson (2014): IV Specification}
+{\small
+\textbf{Setting:} Chinese import competition effects on US local labor markets, 1990--2007.\medskip
+
+\textbf{Shift-Share Instrument:}
+\vspace{-0.3cm}
+\begin{align*}
+Z_{it} = \sum_{k} \underbrace{s_{ik,t-1}}_{\text{emp. share}} \cdot \underbrace{g_{kt}^{\text{other}}}_{\text{import growth}} = \sum_k \frac{L_{ikt-1}}{L_{it-1}} \cdot \frac{\Delta M_{kt}^{\text{other}}}{L_{kt-1}}
+\end{align*}
+\vspace{-0.5cm}
+\textbf{First Stage} (instrument $\to$ actual import growth in CZ $i$):
+\vspace{-0.3cm}
+\begin{align*}
+\Delta IPW_{it} = \alpha_t + \pi \cdot Z_{it} + W_{it}'\psi + \eta_{it}
+\end{align*}
+\vspace{-0.5cm}
+\textbf{Second Stage} (import growth $\to$ manufacturing employment change):
+\vspace{-0.3cm}
+\begin{align*}
+\Delta L_{it}^{\text{mfg}} / L_{it-1} = \beta \cdot \widehat{\Delta IPW}_{it} + W_{it}'\phi + \nu_{it}
+\end{align*}
+}
+{\scriptsize \textcolor{asher}{\href{https://www.aeaweb.org/articles?id=10.1257/aer.104.6.1553}{Autor, Dorn \& Hanson (2014), ``The China Syndrome,'' \emph{AER} 104(6)}}}
 \end{frame}
 
 \begin{frame}{SSIV with Exogneous Shocks}
@@ -875,7 +1036,7 @@ Either controlling for $\mu_i$ or using the recentered $\tilde{Z}_i=Z_i-\mu_i$ a
 	\begin{center}
 		149 lines were built or planned (as of April 2019)
 
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/Lines_actual_planned_nocolor.png}
+		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=0.85\textwidth, keepaspectratio]{lecture_includes/Lines_actual_planned_nocolor.png}
 	\end{center}
 \end{frame}
 
@@ -884,7 +1045,7 @@ Either controlling for $\mu_i$ or using the recentered $\tilde{Z}_i=Z_i-\mu_i$ a
 	\begin{center}
 		The 83 lines actually built by 2016. Suppose exact timing is random
 
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/Line_panel2016.png}
+		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=0.85\textwidth, keepaspectratio]{lecture_includes/Line_panel2016.png}
 	\end{center}
 \end{frame}
 
@@ -893,7 +1054,7 @@ Either controlling for $\mu_i$ or using the recentered $\tilde{Z}_i=Z_i-\mu_i$ a
 	\begin{center}
 		A counterfactual draw of 83 lines by 2016
 
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/Sim_Line_nlink2016.png}
+		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=0.85\textwidth, keepaspectratio]{lecture_includes/Sim_Line_nlink2016.png}
 	\end{center}
 \end{frame}
 
@@ -902,7 +1063,7 @@ Either controlling for $\mu_i$ or using the recentered $\tilde{Z}_i=Z_i-\mu_i$ a
 	\begin{center}
 		Expected MA growth, $\mu_i$
 
-		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=11cm]{lecture_includes/DateExpected2016.png}
+		\includegraphics[trim={1cm 0.5cm 0.5cm 1cm},clip,width=0.85\textwidth, keepaspectratio]{lecture_includes/DateExpected2016.png}
 	\end{center}
 \end{frame}
 
@@ -910,7 +1071,7 @@ Either controlling for $\mu_i$ or using the recentered $\tilde{Z}_i=Z_i-\mu_i$ a
 	\begin{center}
 Recentered MA growth, $Z_i$
 
-	\includegraphics[trim={1cm 0.5cm 0cm 1cm},clip,width=11cm]{lecture_includes/NlinkRecentered2016.png}
+	\includegraphics[trim={1cm 0.5cm 0cm 1cm},clip,width=0.85\textwidth, keepaspectratio]{lecture_includes/NlinkRecentered2016.png}
 	\end{center}
 \end{frame}
 
@@ -940,12 +1101,34 @@ Ex: Medicaid eligibility s a treatment combining statewide policy shocks and ind
 \begin{frame}{Illustration: ACA Medicaid Expansion}
 
 	\begin{center}
-	\includegraphics[width=1\textwidth]{lecture_includes/aca_ss.png}
+	\includegraphics[width=0.95\textwidth, keepaspectratio]{lecture_includes/aca_ss.png}
 	\end{center}
 
-\footnotesize{1\% ACS sample of non-disabled adults in 2013--14, diff-in-diff IV regressions using one of the two instruments. Controls include state and year fixed effects and an indicator for Republican governor interacted with year. State-clustered standard errors in parentheses; wild score bootstrap 95\% CI in brackets} 
+{\footnotesize 1\% ACS sample of non-disabled adults in 2013--14, diff-in-diff IV regressions using one of the two instruments. Controls include state and year fixed effects and an indicator for Republican governor interacted with year. State-clustered standard errors in parentheses; wild score bootstrap 95\% CI in brackets}
 
 \end{frame}
+
+\begin{frame}{Four Key Papers: Quick Reference \& Links}
+\vspace{-0.2cm}
+{\small The four main empirical examples covered in these slides:\bigskip
+
+\begin{enumerate}\itemsep0.6em
+  \item \textbf{Angrist (1990)} --- Vietnam Draft Lottery IV \\
+  {\footnotesize Returns to military service. \emph{AER} 80(3). \href{https://www.jstor.org/stable/2006669}{\texttt{jstor.org/stable/2006669}}}
+
+  \item \textbf{Angrist \& Krueger (1991)} --- Quarter of Birth IV \\
+  {\footnotesize Returns to schooling via compulsory attendance laws. \emph{QJE} 106(4). \href{https://academic.oup.com/qje/article/106/4/979/1917545}{\texttt{doi:10.2307/2937954}}}
+
+  \item \textbf{Duflo (2001)} --- Indonesia School Construction IV (DiD) \\
+  {\footnotesize Schooling and wages; INPRES program as instrument. \emph{AER} 91(4). \href{https://www.aeaweb.org/articles?id=10.1257/aer.91.4.795}{\texttt{aeaweb.org/10.1257/aer.91.4.795}}}
+
+  \item \textbf{Autor, Dorn \& Hanson (2014)} --- China Shock Shift-Share \\
+  {\footnotesize Import competition and US local labor markets. \emph{AER} 104(6). \href{https://www.aeaweb.org/articles?id=10.1257/aer.104.6.1553}{\texttt{aeaweb.org/10.1257/aer.104.6.1553}}}
+\end{enumerate}
+}
+\end{frame}
+
+\imageframe{./lecture_includes/cover_conclusion.png}
 
 \begin{frame}{Concluding Thoughts}
 

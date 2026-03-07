@@ -1,0 +1,228 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  urlcolor   = blue!70!black,
+  linkcolor  = blue!70!black,
+  citecolor  = blue!70!black,
+}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.35}
+
+\definecolor{accent}{HTML}{00b7ff}
+\definecolor{jet}{HTML}{131516}
+\definecolor{asher}{HTML}{555F61}
+
+\title{\textbf{ECON 800 实证文献阅读清单}\\[0.5em]
+       \large Empirical Papers for Review --- Spring 2026}
+\author{东北全面振兴研究院 \quad 杜静玄}
+\date{2026春季学期}
+
+\begin{document}
+\maketitle
+
+\noindent 以下约20篇实证论文涵盖课程所有模块，适合博士生选取其中一至两篇撰写文献评审报告。
+论文均来源于顶级国际期刊或权威工作论文系列（NBER、CESifo、DIW Berlin等）。
+所有链接为DOI或NBER/CESifo工作论文主页，推荐从校园网访问。
+
+\bigskip
+\noindent\rule{\linewidth}{0.4pt}
+
+%==========================================================================
+\section*{模块一：工具变量（Instrumental Variables）}
+%==========================================================================
+
+\begin{enumerate}[label=\textbf{[\arabic*]}, leftmargin=*, itemsep=1em]
+
+\item \textbf{Acemoglu, D., Johnson, S., \& Robinson, J.A. (2001).}
+  ``The Colonial Origins of Comparative Development: An Empirical Investigation.''
+  \emph{American Economic Review}, 91(5), 1369--1401.\\
+  \href{https://doi.org/10.1257/aer.91.5.1369}{\texttt{doi.org/10.1257/aer.91.5.1369}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 殖民地定居者死亡率作为制度质量的工具变量，识别制度对经济发展的因果效应。}}
+
+\item \textbf{Card, D. (1995).}
+  ``Using Geographic Variation in College Proximity to Estimate the Return to Schooling.''
+  In L.N. Christofides et al.\ (eds.), \emph{Aspects of Labour Market Behaviour}, 201--222.
+  NBER Working Paper No.\ 4483.\\
+  \href{https://www.nber.org/papers/w4483}{\texttt{nber.org/papers/w4483}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 居住地与4年制大学的距离作为受教育年限的工具变量，估计教育回报率。}}
+
+\item \textbf{Nunn, N., \& Qian, N. (2014).}
+  ``US Food Aid and Civil Conflict.''
+  \emph{American Economic Review}, 104(6), 1630--1666.\\
+  \href{https://doi.org/10.1257/aer.104.6.1630}{\texttt{doi.org/10.1257/aer.104.6.1630}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 美国小麦产量与历史受援国接受粮食援助的份额交互项（shift-share IV）作为工具变量，识别粮食援助对武装冲突的效应。}}
+
+\item \textbf{Bleakley, H. (2007).}
+  ``Disease and Development: Evidence from Hookworm Eradication in the American South.''
+  \emph{Quarterly Journal of Economics}, 122(1), 73--117.\\
+  \href{https://doi.org/10.1162/qjec.121.1.73}{\texttt{doi.org/10.1162/qjec.121.1.73}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 钩虫病根治计划在地理上的覆盖强度作为工具变量，识别寄生虫病对长期人力资本和收入的影响。}}
+
+\item \textbf{Autor, D.H., Dorn, D., Hanson, G.H., \& Song, J. (2014).}
+  ``Trade Adjustment: Worker-Level Evidence.''
+  \emph{Quarterly Journal of Economics}, 129(4), 1799--1860.\\
+  \href{https://doi.org/10.1093/qje/qju026}{\texttt{doi.org/10.1093/qje/qju026}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 其他高收入国家从中国进口增长作为美国行业级中国进口冲击的工具变量（Bartik-style shift-share）。}}
+
+\item \textbf{Hsieh, C.-T., \& Moretti, E. (2019).}
+  ``Housing Constraints and Spatial Misallocation.''
+  \emph{American Economic Journal: Macroeconomics}, 11(2), 1--39.
+  NBER Working Paper No.\ 21154.\\
+  \href{https://doi.org/10.1257/mac.20170388}{\texttt{doi.org/10.1257/mac.20170388}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 土地坡度等地形变量作为住房监管严格程度的工具变量，识别城市扩张限制对总体GDP的影响。}}
+
+\end{enumerate}
+
+%==========================================================================
+\section*{模块二：断点回归（Regression Discontinuity Design）}
+%==========================================================================
+
+\begin{enumerate}[label=\textbf{[\arabic*]}, leftmargin=*, itemsep=1em, start=7]
+
+\item \textbf{Lee, D.S. (2008).}
+  ``Randomized Experiments from Non-random Selection in U.S. House Elections.''
+  \emph{Journal of Econometrics}, 142(2), 675--697.\\
+  \href{https://doi.org/10.1016/j.jeconom.2007.05.004}{\texttt{doi.org/10.1016/j.jeconom.2007.05.004}}\\
+  {\small \textcolor{asher}{\textbf{RD设计：} 以50\%选票为断点，利用选举结果的准随机性识别现任优势（incumbency advantage）效应。}}
+
+\item \textbf{Carpenter, C., \& Dobkin, C. (2009).}
+  ``The Effect of Alcohol Consumption on Mortality: Regression Discontinuity Evidence from the Minimum Drinking Age.''
+  \emph{American Economic Journal: Applied Economics}, 1(1), 164--182.\\
+  \href{https://doi.org/10.1257/app.1.1.164}{\texttt{doi.org/10.1257/app.1.1.164}}\\
+  {\small \textcolor{asher}{\textbf{RD设计：} 以法定最低饮酒年龄（21岁）为断点，识别酒精消费对死亡率的因果效应。}}
+
+\item \textbf{Dell, M. (2010).}
+  ``The Persistent Effects of Peru's Mining Mita.''
+  \emph{Econometrica}, 78(6), 1863--1903.\\
+  \href{https://doi.org/10.3982/ECTA8121}{\texttt{doi.org/10.3982/ECTA8121}}\\
+  {\small \textcolor{asher}{\textbf{地理RD：} 以历史强制劳工制度（Mita）的地理边界为断点，识别殖民剥削对秘鲁今日发展的长期影响。}}
+
+\end{enumerate}
+
+%==========================================================================
+\section*{模块三：双重差分（Difference-in-Differences）}
+%==========================================================================
+
+\begin{enumerate}[label=\textbf{[\arabic*]}, leftmargin=*, itemsep=1em, start=10]
+
+\item \textbf{Card, D., \& Krueger, A.B. (1994).}
+  ``Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania.''
+  \emph{American Economic Review}, 84(4), 772--793.\\
+  \href{https://www.jstor.org/stable/2118030}{\texttt{jstor.org/stable/2118030}}\\
+  {\small \textcolor{asher}{\textbf{DID设计：} 新泽西州最低工资上调作为自然实验，以宾夕法尼亚州为对照，经典DID识别最低工资对就业的影响。}}
+
+\item \textbf{Chetty, R., Friedman, J.N., \& Rockoff, J.E. (2014).}
+  ``Measuring the Impacts of Teachers I: Evaluating Bias in Teacher Value-Added Estimates.''
+  \emph{American Economic Review}, 104(9), 2593--2632.\\
+  \href{https://doi.org/10.1257/aer.104.9.2593}{\texttt{doi.org/10.1257/aer.104.9.2593}}\\
+  {\small \textcolor{asher}{\textbf{准实验设计：} 利用教师离职的准随机性，结合DID识别教师增值对学生长期结果（收入、大学入学等）的因果影响。}}
+
+\item \textbf{Autor, D.H., \& Duggan, M.G. (2003).}
+  ``The Rise in the Disability Rolls and the Decline in Unemployment.''
+  \emph{Quarterly Journal of Economics}, 118(1), 157--205.\\
+  \href{https://doi.org/10.1162/00335530360535171}{\texttt{doi.org/10.1162/00335530360535171}}\\
+  {\small \textcolor{asher}{\textbf{DID设计：} 利用1984年残疾评定标准放宽在各州执行差异，识别社会保障残疾保险对劳动供给的影响。}}
+
+\item \textbf{Callaway, B., \& Sant'Anna, P.H.C. (2021).}
+  ``Difference-in-Differences with Multiple Time Periods.''
+  \emph{Journal of Econometrics}, 225(2), 200--230.\\
+  \href{https://doi.org/10.1016/j.jeconom.2020.12.001}{\texttt{doi.org/10.1016/j.jeconom.2020.12.001}}\\
+  {\small \textcolor{asher}{\textbf{方法论：} 多期、交错处理时点下DID识别策略的现代方法，针对异质性处理效应的稳健估计。}}
+
+\end{enumerate}
+
+%==========================================================================
+\section*{模块四：合成控制法（Synthetic Control）}
+%==========================================================================
+
+\begin{enumerate}[label=\textbf{[\arabic*]}, leftmargin=*, itemsep=1em, start=14]
+
+\item \textbf{Abadie, A., Diamond, A., \& Hainmueller, J. (2010).}
+  ``Synthetic Control Methods for Comparative Case Studies: Estimating the Effect of California's Tobacco Control Program.''
+  \emph{Journal of the American Statistical Association}, 105(490), 493--505.\\
+  \href{https://doi.org/10.1198/jasa.2009.ap08746}{\texttt{doi.org/10.1198/jasa.2009.ap08746}}\\
+  {\small \textcolor{asher}{\textbf{合成控制：} 提出合成控制法，应用于加利福尼亚州烟草税政策效果评估的奠基之作。}}
+
+\item \textbf{Acemoglu, D., Johnson, S., Kermani, A., Kwak, J., \& Mitton, T. (2016).}
+  ``The Value of Connections in Turbulent Times: Evidence from the United States.''
+  \emph{Journal of Financial Economics}, 121(2), 368--391.
+  NBER Working Paper No.\ 19701.\\
+  \href{https://doi.org/10.1016/j.jfineco.2016.01.005}{\texttt{doi.org/10.1016/j.jfineco.2016.01.005}}\\
+  {\small \textcolor{asher}{\textbf{事件研究+合成控制：} 利用蒂莫西·盖特纳担任财政部长的意外政治事件，识别政治关联对企业价值的影响。}}
+
+\end{enumerate}
+
+%==========================================================================
+\section*{模块五：机器学习与因果推断（ML \& Causal Inference）}
+%==========================================================================
+
+\begin{enumerate}[label=\textbf{[\arabic*]}, leftmargin=*, itemsep=1em, start=16]
+
+\item \textbf{Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., \& Robins, J. (2018).}
+  ``Double/Debiased Machine Learning for Treatment and Structural Parameters.''
+  \emph{Econometrics Journal}, 21(1), C1--C68.\\
+  \href{https://doi.org/10.1111/ectj.12097}{\texttt{doi.org/10.1111/ectj.12097}}\\
+  {\small \textcolor{asher}{\textbf{DML方法：} 提出双重去偏机器学习框架，解决高维控制变量下因果效应的识别与推断问题。}}
+
+\item \textbf{Athey, S., \& Imbens, G.W. (2016).}
+  ``Recursive Partitioning for Heterogeneous Causal Effects.''
+  \emph{Proceedings of the National Academy of Sciences}, 113(27), 7353--7360.\\
+  \href{https://doi.org/10.1073/pnas.1510489113}{\texttt{doi.org/10.1073/pnas.1510489113}}\\
+  {\small \textcolor{asher}{\textbf{因果森林：} 利用因果树/因果森林方法识别异质性处理效应，为个体化政策设计提供工具。}}
+
+\end{enumerate}
+
+%==========================================================================
+\section*{中国经济相关实证研究（China-Focused Empirics）}
+%==========================================================================
+
+\begin{enumerate}[label=\textbf{[\arabic*]}, leftmargin=*, itemsep=1em, start=18]
+
+\item \textbf{Hsieh, C.-T., \& Klenow, P.J. (2009).}
+  ``Misallocation and Manufacturing TFP in China and India.''
+  \emph{Quarterly Journal of Economics}, 124(4), 1403--1448.\\
+  \href{https://doi.org/10.1162/qjec.2009.124.4.1403}{\texttt{doi.org/10.1162/qjec.2009.124.4.1403}}\\
+  {\small \textcolor{asher}{\textbf{结构估计：} 利用结构模型估计中国和印度制造业的资源错配程度，识别生产率损失的主要来源。}}
+
+\item \textbf{Brandt, L., Van Biesebroeck, J., \& Zhang, Y. (2012).}
+  ``Creative Accounting or Creative Destruction? Firm-Level Productivity Growth in Chinese Manufacturing.''
+  \emph{Journal of Development Economics}, 97(2), 339--351.\\
+  \href{https://doi.org/10.1016/j.jdeveco.2011.02.002}{\texttt{doi.org/10.1016/j.jdeveco.2011.02.002}}\\
+  {\small \textcolor{asher}{\textbf{生产率测量：} 利用中国工业企业数据库，采用Olley-Pakes方法估计全要素生产率，分析中国制造业生产率增长来源。}}
+
+\item \textbf{Ge, S., \& Yang, D.T. (2014).}
+  ``Changes in China's Wage Structure.''
+  \emph{Journal of the European Economic Association}, 12(2), 300--336.\\
+  \href{https://doi.org/10.1111/jeea.12072}{\texttt{doi.org/10.1111/jeea.12072}}\\
+  {\small \textcolor{asher}{\textbf{劳动经济学：} 利用城镇住户调查和工业普查数据，结合工资分解与因果识别分析中国工资结构变化。}}
+
+\item \textbf{Huang, Y., \& Sheng, Y. (2022).}
+  ``How Does Credit Market Distortion Affect Chinese Firms' R\&D Investment?''
+  CESifo Working Paper No.\ 9855.\\
+  \href{https://www.cesifo.org/en/publications/2022/working-paper/how-does-credit-market-distortion-affect-chinese-firms-rd}{\texttt{cesifo.org/working-paper/9855}}\\
+  {\small \textcolor{asher}{\textbf{IV设计：} 利用银行分支机构的地理分布作为信贷可得性的工具变量，识别融资约束对中国企业研发投入的因果效应。}}
+
+\end{enumerate}
+
+\bigskip
+\noindent\rule{\linewidth}{0.4pt}
+
+\section*{说明与建议}
+
+\begin{itemize}[itemsep=0.5em]
+  \item 以上论文涵盖课程七大模块，每篇均有清晰的\textbf{因果识别策略}，适合撰写评审报告（Paper Review）。
+  \item 评审报告选题建议：优先选取与您期末论文研究方向相关的论文，或选取识别策略最值得深入讨论的论文。
+  \item 报告结构请参照课程评审模板（摘要 / 重要意见 / 次要意见 / 处理建议），字数800--1200字。
+  \item 中文论文推荐另参阅：《经济研究》《经济学（季刊）》《中国工业经济》等期刊近五年实证论文。
+\end{itemize}
+
+\end{document}
